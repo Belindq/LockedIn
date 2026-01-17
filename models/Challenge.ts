@@ -6,6 +6,12 @@ export interface IChallenge extends Document {
     type: 'text' | 'image' | 'location';
     prompt: string;
     timeLimitSeconds: number;
+
+    // AI Learning Fields
+    insights?: string; // AI-generated insights from responses
+    learnedAboutUserA?: string; // What AI learned about user A
+    learnedAboutUserB?: string; // What AI learned about user B
+    depthLevel?: number; // 1-5, increasing depth of exploration
 }
 
 const ChallengeSchema = new Schema<IChallenge>({
@@ -34,6 +40,25 @@ const ChallengeSchema = new Schema<IChallenge>({
         type: Number,
         required: true,
         min: 0
+    },
+    insights: {
+        type: String,
+        required: false
+    },
+    learnedAboutUserA: {
+        type: String,
+        required: false
+    },
+    learnedAboutUserB: {
+        type: String,
+        required: false
+    },
+    depthLevel: {
+        type: Number,
+        required: false,
+        min: 1,
+        max: 5,
+        default: 1
     }
 });
 

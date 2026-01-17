@@ -87,6 +87,36 @@ export async function POST(request: NextRequest) {
         partnerProgress.status = approve ? 'approved' : 'rejected';
         await partnerProgress.save();
 
+        // If approved, check if THIS user has also completed
+        if (approve) {
+            const myProgress = await ChallengeProgress.findOne({
+                challengeId: new mongoose.Types.ObjectId(challengeId),
+                userId: new mongoose.Types.ObjectId(userId)
+            });
+
+            // If BOTH users have approved this challenge, unlock the next one
+            if (myProgress && myProgress.status === 'approved') {
+                // Find the next challenge
+                const currentChallenge = await Challenge.findById(challengeId);
+                const nextChallenge = await Challenge.findOne({
+                    questId: quest._id,
+                    orderIndex: currentChallenge!.orderIndex + 1
+                });
+
+                if (nextChallenge) {
+                    // Unlock next challenge for both users
+                    await ChallengeProgress.updateMany(
+                        {
+                            challengeId: nextChallenge._id,
+                            questId: quest._id
+                        },
+                        { $set: { status: 'active' } }
+                    );
+                    console.log(`Unlocked challenge ${nextChallenge.orderIndex + 1} for quest ${quest._id}`);
+                }
+            }
+        }
+
         // Check if quest is now complete
         const questComplete = await isQuestComplete(quest._id);
 

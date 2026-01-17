@@ -2,8 +2,9 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IChallengeProgress extends Document {
     challengeId: mongoose.Types.ObjectId;
+    questId?: mongoose.Types.ObjectId;
     userId: mongoose.Types.ObjectId;
-    status: 'pending' | 'submitted' | 'approved' | 'rejected' | 'expired';
+    status: 'locked' | 'active' | 'pending' | 'submitted' | 'approved' | 'rejected' | 'expired';
     submissionText?: string;
     submissionImageId?: mongoose.Types.ObjectId;
     submissionImageBase64?: string;
@@ -18,6 +19,12 @@ const ChallengeProgressSchema = new Schema<IChallengeProgress>({
         required: true,
         index: true
     },
+    questId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Quest',
+        required: false,
+        index: true
+    },
     userId: {
         type: Schema.Types.ObjectId,
         ref: 'User',
@@ -26,8 +33,8 @@ const ChallengeProgressSchema = new Schema<IChallengeProgress>({
     },
     status: {
         type: String,
-        enum: ['pending', 'submitted', 'approved', 'rejected', 'expired'],
-        default: 'pending',
+        enum: ['locked', 'active', 'pending', 'submitted', 'approved', 'rejected', 'expired'],
+        default: 'locked',
         required: true
     },
     submissionText: {

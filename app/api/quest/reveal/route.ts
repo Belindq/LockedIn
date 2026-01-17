@@ -60,9 +60,9 @@ export async function GET(request: NextRequest) {
             quest.status = 'completed';
             await quest.save();
 
-            // Update user statuses to idle (they can re-enter matching)
-            await User.findByIdAndUpdate(quest.userAId, { status: 'idle' });
-            await User.findByIdAndUpdate(quest.userBId, { status: 'idle' });
+            // Update user statuses to waiting_for_match (they can re-enter matching)
+            await User.findByIdAndUpdate(quest.userAId, { status: 'waiting_for_match' });
+            await User.findByIdAndUpdate(quest.userBId, { status: 'waiting_for_match' });
         }
 
         // Get user's home location for personalized directions

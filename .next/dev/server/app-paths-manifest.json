@@ -1,0 +1,10 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/admin/migrate-status/route": "app/api/admin/migrate-status/route.js",
+  "/api/debug/users/route": "app/api/debug/users/route.js",
+  "/api/match/active/route": "app/api/match/active/route.js",
+  "/api/match/run/route": "app/api/match/run/route.js",
+  "/matches/page": "app/matches/page.js",
+  "/onboarding/page": "app/onboarding/page.js",
+  "/page": "app/page.js"
+}

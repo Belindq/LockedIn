@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import User from '@/models/User';
 import { validateAddress } from '@/lib/address';
+import { runMatchingAlgorithm } from '@/lib/matching';
 
 export async function PUT(req: Request) {
     try {
@@ -55,6 +56,16 @@ export async function PUT(req: Request) {
         user.status = 'waiting_for_match';
 
         await user.save();
+
+        // Trigger matching algorithm immediately for instant feedback
+        // We do this asynchronously so we don't block the UI response too much, 
+        // but for this MVP/Hackathon scale, awaiting is fine and ensures consistency.
+        try {
+            await runMatchingAlgorithm();
+        } catch (matchError) {
+            console.error('Auto-match trigger failed:', matchError);
+            // Don't fail the onboarding request if matching fails
+        }
 
         return NextResponse.json({ success: true, user });
 

@@ -39,8 +39,9 @@ export async function runMatchingAlgorithm() {
     Constraints:
     1. Users must be compatible based on gender/sexuality (Strict).
     2. Respect "Deal Breakers" absolutely.
-    3. Return matches as pairs of IDs.
-    4. Each user can only be in ONE pair.
+    3. Prioritize matches with similar ages.
+    4. Return matches as pairs of IDs.
+    5. Each user can only be in ONE pair.
     
     Input Users (JSON):
     ${JSON.stringify(candidates)}

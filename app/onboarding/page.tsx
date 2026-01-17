@@ -40,8 +40,8 @@ export default function OnboardingPage() {
     });
 
     // Enum Options
-    const genderOptions = ['Male', 'Female', 'Non-binary', 'Other', 'Prefer not to say'];
-    const sexualityOptions = ['Heterosexual', 'Gay', 'Lesbian', 'Bisexual', 'Pansexual', 'Asexual', 'Other', 'Prefer not to say'];
+    // const genderOptions = ... (Removed, using hardcoded options for value mapping)
+    // const sexualityOptions = ... (Removed)
     const avatars = [
         { id: 'avatar1', label: 'Avatar 1', icon: '👤' },
         { id: 'avatar2', label: 'Avatar 2', icon: '👩' },
@@ -69,7 +69,8 @@ export default function OnboardingPage() {
                     formData.lastName &&
                     formData.age &&
                     formData.gender &&
-                    formData.sexuality
+                    formData.sexuality &&
+                    parseInt(formData.age) >= 18
                 );
             case 3: // Location
                 return !!(formData.homeAddress);
@@ -234,6 +235,9 @@ export default function OnboardingPage() {
                                             className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px]"
                                             placeholder="18+"
                                         />
+                                        {formData.age && parseInt(formData.age) < 18 && (
+                                            <p className="text-red-500 text-[10px] mt-1 font-pixel">You must be 18+ to join.</p>
+                                        )}
                                     </div>
                                     <div>
                                         <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Gender</label>
@@ -243,7 +247,11 @@ export default function OnboardingPage() {
                                             className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px]"
                                         >
                                             <option value="">Select...</option>
-                                            {genderOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                            <option value="male">Male</option>
+                                            <option value="female">Female</option>
+                                            <option value="non-binary">Non-binary</option>
+                                            <option value="other">Other</option>
+                                            <option value="prefer_not_to_say">Prefer not to say</option>
                                         </select>
                                     </div>
                                     <div>
@@ -254,7 +262,14 @@ export default function OnboardingPage() {
                                             className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px]"
                                         >
                                             <option value="">Select...</option>
-                                            {sexualityOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                            <option value="heterosexual">Heterosexual</option>
+                                            <option value="gay">Gay</option>
+                                            <option value="lesbian">Lesbian</option>
+                                            <option value="bisexual">Bisexual</option>
+                                            <option value="pansexual">Pansexual</option>
+                                            <option value="asexual">Asexual</option>
+                                            <option value="other">Other</option>
+                                            <option value="prefer_not_to_say">Prefer not to say</option>
                                         </select>
                                     </div>
                                 </div>

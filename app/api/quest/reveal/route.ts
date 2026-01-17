@@ -107,9 +107,8 @@ export async function GET(request: NextRequest) {
                 .map(p => p.submissionText!);
 
             // Generate Date Idea via AI
-            // Use User A's location as context (or midpoint if we want to be fancy, but text context is easier)
-            // Ideally reverse geocode, but for now just say "near [Lat, Lng]"
-            const cityContext = `coordinates ${userA.locationCoordinates.lat.toFixed(2)}, ${userA.locationCoordinates.lng.toFixed(2)}`;
+            // Use User A's location as context
+            const cityContext = `${userA.homeAddress} (Coordinates: ${userA.locationCoordinates.lat.toFixed(4)}, ${userA.locationCoordinates.lng.toFixed(4)})`;
 
             // Dynamic import to avoid circular dep issues if any
             const { generateDateIdea } = await import('@/lib/gemini-quest-engine');
@@ -135,6 +134,7 @@ export async function GET(request: NextRequest) {
             quest.finalDateTitle = dateIdea.title;
             quest.finalDateDescription = dateIdea.description;
             quest.finalDateActivity = dateIdea.activityType;
+            quest.finalDateAddress = dateIdea.address;
 
             await quest.save();
         }

@@ -1,4 +1,1 @@
-[00:00:01.314] Server  LOG     
-[00:00:01.314] Server  LOG       We detected TypeScript in your project and created a tsconfig.json file for you.
-[00:00:01.385] Server  LOG     ✓ Ready in 1236ms
-[00:00:19.627] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:02.249] Server  LOG     ✓ Ready in 1523ms

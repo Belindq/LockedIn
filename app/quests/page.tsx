@@ -133,7 +133,7 @@ export default function QuestsPage() {
     // No quest found
     if (!activeQuest) {
         return (
-            <div className="min-h-screen bg-background flex items-center justify-center">
+            <div className="h-full bg-background flex items-center justify-center">
                 <EmptyState
                     icon="💫"
                     heading="No active quest"

@@ -3,8 +3,6 @@ import type { NextRequest } from 'next/server';
 import { verifySession } from './lib/auth';
 
 export async function middleware(request: NextRequest) {
-    // TEMPORARILY DISABLED FOR TESTING
-    /*
     if (request.nextUrl.pathname.startsWith('/api') &&
         !request.nextUrl.pathname.startsWith('/api/auth')) {
 
@@ -28,7 +26,6 @@ export async function middleware(request: NextRequest) {
             },
         });
     }
-    */
 
     return NextResponse.next();
 }

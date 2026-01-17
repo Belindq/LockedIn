@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import mongoose from 'mongoose';
 import connectDB from '@/lib/db';
 import Quest from '@/models/Quest';
 import Challenge from '@/models/Challenge';
@@ -26,11 +27,14 @@ export async function GET(request: NextRequest) {
             );
         }
 
+        // Convert userId to ObjectId
+        const userObjectId = new mongoose.Types.ObjectId(userId);
+
         // Find active quest for this user
         const quest = await Quest.findOne({
             $or: [
-                { userAId: userId },
-                { userBId: userId }
+                { userAId: userObjectId },
+                { userBId: userObjectId }
             ],
             status: { $in: ['pending_acceptance', 'active'] }
         });
@@ -60,7 +64,7 @@ export async function GET(request: NextRequest) {
         const userBProgress = await calculateUserProgress(quest._id, quest.userBId);
 
         // Get current challenge for requesting user
-        const currentChallengeData = await getCurrentChallenge(quest._id, userId);
+        const currentChallengeData = await getCurrentChallenge(quest._id, new mongoose.Types.ObjectId(userId));
 
         // Get partner's current challenge
         const partnerId = quest.userAId.toString() === userId ? quest.userBId : quest.userAId;

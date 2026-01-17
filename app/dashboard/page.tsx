@@ -26,12 +26,8 @@ export default function DashboardPage() {
                 setUserData(data);
 
                 if (data.userStatus === 'matched') {
-                    // Fetch active quest to get ID
-                    const questRes = await fetch(`/api/quest/active?userId=${data.userId}`);
-                    if (questRes.ok) {
-                        const questData = await questRes.json();
-                        router.push(`/quest/${questData.quest.id}`);
-                    }
+                    // Route to quests page (not dynamic route)
+                    router.push('/quests');
                 } else if (data.userStatus === 'onboarding') {
                     router.push('/onboarding');
                 }

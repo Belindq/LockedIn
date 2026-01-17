@@ -70,21 +70,21 @@ export default function GalleryPage() {
                 <div className="w-full mx-auto">
                     {/* Avatar icons and progress */}
                     <div className="flex items-center gap-4 mb-4">
-                        {/* User avatar */}
+                        {/* Partner avatar */}
                         <div
                             className="relative"
-                            onMouseEnter={() => setHoveredAvatar("user")}
+                            onMouseEnter={() => setHoveredAvatar("partner")}
                             onMouseLeave={() => setHoveredAvatar(null)}
                         >
-                            <div className="w-12 h-12 bg-card border-2 border-border flex items-center justify-center text-[20px] cursor-pointer hover:border-primary transition-colors">
+                            <div className="w-12 h-12 bg-card border-2 border-border flex items-center justify-center text-[20px] cursor-pointer hover:border-secondary transition-colors text-foreground">
                                 👤
                             </div>
-                            {hoveredAvatar === "user" && (
+                            {hoveredAvatar === "partner" && (
                                 <div className="absolute bottom-full left-0 mb-2 w-48">
                                     <ProgressBar
-                                        value={progress.user}
-                                        label="Your Progress"
-                                        variant="user"
+                                        value={progress.partner}
+                                        label={`${partner?.firstName || 'Partner'}'s Progress`}
+                                        variant="partner"
                                     />
                                 </div>
                             )}
@@ -109,27 +109,27 @@ export default function GalleryPage() {
                             {hoveredAvatar === "partner" && (
                                 <ProgressBar
                                     value={progress.partner}
-                                    label={`${partner?.firstName}'s Progress`}
+                                    label={`${partner?.firstName || 'Partner'}'s Progress`}
                                     variant="partner"
                                 />
                             )}
                         </div>
 
-                        {/* Partner avatar */}
+                        {/* User avatar */}
                         <div
                             className="relative"
-                            onMouseEnter={() => setHoveredAvatar("partner")}
+                            onMouseEnter={() => setHoveredAvatar("user")}
                             onMouseLeave={() => setHoveredAvatar(null)}
                         >
-                            <div className="w-12 h-12 bg-card border-2 border-border flex items-center justify-center text-[20px] cursor-pointer hover:border-secondary transition-colors">
+                            <div className="w-12 h-12 bg-card border-2 border-border flex items-center justify-center text-[20px] cursor-pointer hover:border-primary transition-colors text-foreground">
                                 👤
                             </div>
-                            {hoveredAvatar === "partner" && (
+                            {hoveredAvatar === "user" && (
                                 <div className="absolute bottom-full right-0 mb-2 w-48">
                                     <ProgressBar
-                                        value={progress.partner}
-                                        label={`${partner?.firstName}'s Progress`}
-                                        variant="partner"
+                                        value={progress.user}
+                                        label="Your Progress"
+                                        variant="user"
                                     />
                                 </div>
                             )}

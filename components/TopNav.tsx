@@ -21,9 +21,9 @@ export function TopNav() {
             <div className="w-full px-4">
                 <div className="flex items-center justify-center h-16 relative">
                     {/* Logo - Top Left */}
-                    <div className="absolute left-0 top-1/2 transform -translate-y-1/2">
+                    <div className="absolute left-0 top-[35%] transform -translate-y-1/2">
                         <Link href="/quests">
-                            <img src="/logo.png" alt="LockedIn Logo" className="h-20 object-contain hover:opacity-80 transition-opacity" />
+                            <img src="/logo.png" alt="LockedIn Logo" className="h-40 object-contain hover:opacity-80 transition-opacity" />
                         </Link>
                     </div>
 

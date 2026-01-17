@@ -85,9 +85,7 @@ export default function MatchesPage() {
                             <p className="font-pixel text-lg text-card-text">
                                 You are on the waitlist.
                             </p>
-                            <p className="text-xs font-pixel text-gray-500">
-                                Matching runs daily at 8 PM.
-                            </p>
+
                             <p className="text-xs font-pixel text-primary">
                                 Ensure your profile is 100% complete!
                             </p>
@@ -101,28 +99,7 @@ export default function MatchesPage() {
                     </p>
                 )}
 
-                {/* Debug Control */}
-                <div className="mt-8 pt-6 border-t-2 border-border border-dashed">
-                    <p className="text-[10px] uppercase font-bold text-gray-400 mb-3 tracking-widest">
-                        Debug Zone
-                    </p>
-                    <Button
-                        variant="secondary"
-                        onClick={async () => {
-                            try {
-                                const res = await fetch('/api/match/run', { method: 'POST' });
-                                const data = await res.json();
-                                alert('Matching Algorithm Run: ' + JSON.stringify(data));
-                                window.location.reload();
-                            } catch (e) {
-                                alert('Matching Failed');
-                            }
-                        }}
-                        className="text-[10px] py-2 px-4 w-full opacity-50 hover:opacity-100 transition-opacity"
-                    >
-                        ⚡ FORCE MATCH
-                    </Button>
-                </div>
+
             </Card>
         </div>
     );

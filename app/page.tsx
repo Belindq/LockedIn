@@ -21,7 +21,7 @@ export default function Home() {
       <div className="max-w-md w-full text-center space-y-12">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <img src="/logo.png" alt="LockedIn Logo" className="h-32 object-contain" />
+          <img src="/logo.png" alt="LockedIn Logo" className="h-[24rem] object-contain" />
         </div>
 
         {/* Begin Button */}

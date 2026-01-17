@@ -166,6 +166,15 @@ export default function QuestsPage() {
                     <div className="space-y-6">
                         {activeQuest.challenges.map((challenge: any, idx: number) => {
                             const isLocked = challenge.myStatus.status === 'locked';
+
+                            // Show current active/submitted challenges, 
+                            // and only the FIRST locked challenge (next milestone).
+                            // Hide subsequent future challenges.
+                            if (isLocked) {
+                                const firstLockedIndex = activeQuest.challenges.findIndex((c: any) => c.myStatus.status === 'locked');
+                                if (idx > firstLockedIndex) return null;
+                            }
+
                             const isActive = challenge.myStatus.status === 'active';
                             const isSubmitted = challenge.myStatus.status === 'submitted';
                             const isCompleted = challenge.myStatus.status === 'completed' || challenge.myStatus.status === 'approved';
@@ -346,21 +355,21 @@ export default function QuestsPage() {
                 <div className="w-full mx-auto">
                     {/* Avatar icons and progress */}
                     <div className="flex items-center gap-4 mb-4">
-                        {/* User avatar */}
+                        {/* Partner avatar */}
                         <div
                             className="relative"
-                            onMouseEnter={() => setHoveredAvatar("user")}
+                            onMouseEnter={() => setHoveredAvatar("partner")}
                             onMouseLeave={() => setHoveredAvatar(null)}
                         >
-                            <div className="w-12 h-12 bg-card border-2 border-border flex items-center justify-center text-[20px] cursor-pointer hover:border-primary transition-colors">
+                            <div className="w-12 h-12 bg-card border-2 border-border flex items-center justify-center text-[20px] cursor-pointer hover:border-secondary transition-colors text-foreground">
                                 👤
                             </div>
-                            {hoveredAvatar === "user" && (
+                            {hoveredAvatar === "partner" && (
                                 <div className="absolute bottom-full left-0 mb-2 w-48">
                                     <ProgressBar
-                                        value={userProgress}
-                                        label="Your Progress"
-                                        variant="user"
+                                        value={partnerProgress}
+                                        label={`${activeQuest.quest.partnerName}'s Progress`}
+                                        variant="partner"
                                     />
                                 </div>
                             )}
@@ -385,27 +394,27 @@ export default function QuestsPage() {
                             {hoveredAvatar === "partner" && (
                                 <ProgressBar
                                     value={partnerProgress}
-                                    label="Partner's Progress"
+                                    label={`${activeQuest.quest.partnerName}'s Progress`}
                                     variant="partner"
                                 />
                             )}
                         </div>
 
-                        {/* Partner avatar */}
+                        {/* User avatar */}
                         <div
                             className="relative"
-                            onMouseEnter={() => setHoveredAvatar("partner")}
+                            onMouseEnter={() => setHoveredAvatar("user")}
                             onMouseLeave={() => setHoveredAvatar(null)}
                         >
-                            <div className="w-12 h-12 bg-card border-2 border-border flex items-center justify-center text-[20px] cursor-pointer hover:border-secondary transition-colors">
+                            <div className="w-12 h-12 bg-card border-2 border-border flex items-center justify-center text-[20px] cursor-pointer hover:border-primary transition-colors text-foreground">
                                 👤
                             </div>
-                            {hoveredAvatar === "partner" && (
+                            {hoveredAvatar === "user" && (
                                 <div className="absolute bottom-full right-0 mb-2 w-48">
                                     <ProgressBar
-                                        value={partnerProgress}
-                                        label="Partner's Progress"
-                                        variant="partner"
+                                        value={userProgress}
+                                        label="Your Progress"
+                                        variant="user"
                                     />
                                 </div>
                             )}

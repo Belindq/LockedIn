@@ -105,6 +105,8 @@ export async function GET(request: NextRequest) {
         const userAProgress = await calculateUserProgress(currentQuest._id, currentQuest.userAId);
         const userBProgress = await calculateUserProgress(currentQuest._id, currentQuest.userBId);
 
+        const partner = await mongoose.model('User').findById(partnerId).select('firstName');
+
         return NextResponse.json({
             quest: {
                 id: currentQuest._id,
@@ -113,7 +115,8 @@ export async function GET(request: NextRequest) {
                 expiresAt: currentQuest.expiresAt,
                 userAProgress,
                 userBProgress,
-                partnerId: partnerId
+                partnerId: partnerId,
+                partnerName: (partner as any)?.firstName || 'Partner'
             },
             challenges: challengesWithStatus,
             currentChallengeIndex: myCurrentIndex === -1 ? challenges.length : myCurrentIndex,

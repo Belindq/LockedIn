@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import connectDB from '@/lib/db';
 import Quest from '@/models/Quest';
+import User from '@/models/User';
 import Challenge from '@/models/Challenge';
 import ChallengeProgress from '@/models/ChallengeProgress';
 import { checkAndUpdateQuestExpiration, calculateUserProgress, getCurrentChallenge } from '@/lib/quest-utils';
@@ -87,12 +88,12 @@ export async function GET(request: NextRequest) {
             };
         });
 
-        // Determine "Current Challenge" logic (First non-completed/approved)
+        // Determine "Current Challenge" logic (First non-approved)
         const myCurrentIndex = challengesWithStatus.findIndex(c =>
-            c.myStatus.status !== 'approved' && c.myStatus.status !== 'completed'
+            c.myStatus.status !== 'approved'
         );
         const partnerCurrentIndex = challengesWithStatus.findIndex(c =>
-            c.partnerStatus.status !== 'approved' && c.partnerStatus.status !== 'completed'
+            c.partnerStatus.status !== 'approved'
         );
 
         // Adjust 'locked' statuses to 'active' for the current index
@@ -105,7 +106,8 @@ export async function GET(request: NextRequest) {
         const userAProgress = await calculateUserProgress(currentQuest._id, currentQuest.userAId);
         const userBProgress = await calculateUserProgress(currentQuest._id, currentQuest.userBId);
 
-        const partner = await mongoose.model('User').findById(partnerId).select('firstName');
+        // Fetch partner user details
+        const partnerUser = await User.findById(partnerId).select('firstName');
 
         return NextResponse.json({
             quest: {
@@ -116,7 +118,7 @@ export async function GET(request: NextRequest) {
                 userAProgress,
                 userBProgress,
                 partnerId: partnerId,
-                partnerName: (partner as any)?.firstName || 'Partner'
+                partnerName: partnerUser?.firstName || 'Partner'
             },
             challenges: challengesWithStatus,
             currentChallengeIndex: myCurrentIndex === -1 ? challenges.length : myCurrentIndex,

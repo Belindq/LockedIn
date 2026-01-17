@@ -156,12 +156,21 @@ export default function QuestsPage() {
     const partnerProgress = activeQuest.quest.userBProgress || 0;
     const combinedProgress = Math.round((userProgress + partnerProgress) / 2);
 
+    // Get partner name from match data
+    const partnerName = activeQuest.partnerName || "Partner";
+
     // Active Quest View
     return (
         <div className="h-full bg-background flex flex-col">
             {/* Main scrollable quest area */}
             <div className="flex-1 overflow-y-auto pb-32">
                 <div className="w-full px-4 py-8">
+                    {/* Partner Name Header */}
+                    <div className="text-center mb-6">
+                        <h2 className="text-[12px] font-pixel text-secondary mb-1">QUESTING WITH</h2>
+                        <h1 className="text-[18px] font-pixel text-primary uppercase">{partnerName}</h1>
+                    </div>
+
                     {/* Quest messages in chat style */}
                     <div className="space-y-6">
                         {activeQuest.challenges.map((challenge: any, idx: number) => {
@@ -425,10 +434,15 @@ export default function QuestsPage() {
                     <div className="flex justify-center">
                         <Button
                             variant="destructive"
-                            onClick={() => router.push('/dashboard')}
+                            onClick={() => {
+                                if (confirm('Are you sure you want to unmatch? This will end your quest.')) {
+                                    // TODO: Call unmatch API
+                                    router.push('/dashboard');
+                                }
+                            }}
                             className="text-[10px] bg-background border-2 border-border !text-black dark:!text-white font-bold hover:bg-red-500 hover:!text-white hover:border-red-500 text-xs px-8 py-2 font-pixel"
                         >
-                            EXIT QUEST
+                            UNMATCH
                         </Button>
                     </div>
                 </div>

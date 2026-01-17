@@ -69,8 +69,8 @@ function SignupPage() {
             if (!res.ok) {
                 throw new Error(data.details || data.error || 'Signup failed');
             }
-            // Redirect to Onboarding
-            router.push('/onboarding');
+            // Redirect to Dashboard (which will route to Onboarding if needed)
+            router.push('/dashboard');
         } catch (err) {
             setError(err.message);
         } finally{

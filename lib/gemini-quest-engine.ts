@@ -40,7 +40,7 @@ export async function generateQuestChallenges(
     userAProfile: UserProfile,
     userBProfile: UserProfile
 ): Promise<GeneratedChallenge[]> {
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const prompt = `You are a creative dating app quest designer. Generate exactly 5 unique, fun, and family-friendly challenges for two people to complete together.
 
@@ -60,7 +60,7 @@ IMPORTANT RULES:
 4. Keep them playful, revealing, and connection-building
 5. Must be family-friendly and appropriate
 6. Each challenge should take 10-30 minutes to complete
-7. Avoid anything requiring purchases or dangerous activities
+7. Avoid any dangerous activities
 
 Return ONLY a valid JSON array in this exact format:
 [
@@ -80,19 +80,35 @@ Time limits should be between 1800 (30 min) and 86400 (24 hours) seconds.`;
         const response = await result.response;
         const text = response.text();
 
-        // Extract JSON from response (handle markdown code blocks)
+        console.log('--- Gemini Raw Response ---');
+        console.log(text);
+        console.log('---------------------------');
+
+        // Extract JSON from response (handle markdown code blocks and surrounding text)
         let jsonText = text.trim();
-        if (jsonText.startsWith('```json')) {
-            jsonText = jsonText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-        } else if (jsonText.startsWith('```')) {
-            jsonText = jsonText.replace(/```\n?/g, '');
+
+        // Match JSON code block: ```json ... ``` or just ``` ... ```
+        const codeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+        if (codeBlockMatch) {
+            jsonText = codeBlockMatch[1].trim();
+        } else {
+            // Attempt to find array brackets if no code block
+            const start = text.indexOf('[');
+            const end = text.lastIndexOf(']');
+            if (start !== -1 && end !== -1) {
+                jsonText = text.substring(start, end + 1);
+            }
         }
+
+        console.log('--- Parsed JSON Text ---');
+        console.log(jsonText);
+        console.log('------------------------');
 
         const challenges = JSON.parse(jsonText);
 
         // Validate we got exactly 5 challenges
         if (!Array.isArray(challenges) || challenges.length !== 5) {
-            throw new Error('AI did not generate exactly 5 challenges');
+            throw new Error(`AI generated ${Array.isArray(challenges) ? challenges.length : 'invalid type'} challenges (expected 5)`);
         }
 
         // Validate each challenge has required fields
@@ -108,6 +124,7 @@ Time limits should be between 1800 (30 min) and 86400 (24 hours) seconds.`;
         return challenges;
     } catch (error) {
         console.error('Error generating quest challenges:', error);
+        console.error('Falling back to default templates.');
 
         // Fallback to default challenges if AI fails
         return [
@@ -128,7 +145,7 @@ Time limits should be between 1800 (30 min) and 86400 (24 hours) seconds.`;
             },
             {
                 type: 'image',
-                prompt: "Take a photo of something that would make a bad first impression but a great third one.",
+                prompt: "Take a photo of something that would make a bad first impression but a great second one.",
                 timeLimitSeconds: 7200
             },
             {
@@ -147,9 +164,10 @@ Time limits should be between 1800 (30 min) and 86400 (24 hours) seconds.`;
 export async function detectFaceInImage(imageBase64: string): Promise<{
     hasFace: boolean;
     confidence: number;
-    warning: boolean;
+    blocked: boolean;
+    error?: string;
 }> {
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro-vision' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     const prompt = `Analyze this image and determine if it contains a clearly visible human face.
   
@@ -166,9 +184,23 @@ Confidence should be:
 - 0-49: Probably no face or face not clearly visible`;
 
     try {
+        // Strip data:image/...;base64, prefix if present
+        const data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
+
+        // Optimization: Skip face detection for very small images (likely debug/placeholders)
+        // A 1x1 pixel PNG is very short.
+        if (data.length < 100) {
+            console.log('Skipping face detection for small/debug image');
+            return {
+                hasFace: false,
+                confidence: 0,
+                blocked: false
+            };
+        }
+
         const imagePart = {
             inlineData: {
-                data: imageBase64,
+                data: data,
                 mimeType: 'image/jpeg'
             }
         };
@@ -187,19 +219,103 @@ Confidence should be:
 
         const result_data = JSON.parse(jsonText);
 
+        // Block if face confidence is high (> 80)
+        const blocked = result_data.confidence > 80;
+
         return {
             hasFace: result_data.hasFace,
             confidence: result_data.confidence,
-            warning: result_data.confidence < 80 // Warn if below 80% threshold
+            blocked: blocked
         };
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error detecting face in image:', error);
 
-        // On error, allow submission but warn user
+        // On error, we default to NOT blocking, but log it
         return {
             hasFace: false,
             confidence: 0,
-            warning: true
+            blocked: false,
+            error: error.message || String(error)
+        };
+    }
+}
+
+/**
+ * Generate a personalized date location/idea based on users and their quest responses
+ */
+export async function generateDateIdea(
+    userAProfile: UserProfile,
+    userBProfile: UserProfile,
+    userAResponses: string[],
+    userBResponses: string[],
+    cityContext: string // e.g. "NYC" or "Coords: 40.71, -74.00"
+): Promise<{
+    title: string;
+    description: string;
+    activityType: string;
+    locationName: string;
+    address: string;
+}> {
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+
+    const prompt = `You are a romantic dating expert. Design the PERFECT first date for two people who just matched and completed a connection quest.
+
+User A:
+Interests: ${userAProfile.interests}
+Values: ${userAProfile.values}
+Key phrases from their quest answers: "${userAResponses.join('", "')}"
+
+User B:
+Interests: ${userBProfile.interests}
+Values: ${userBProfile.values}
+Key phrases from their quest answers: "${userBResponses.join('", "')}"
+
+Location Context: They are located near ${cityContext}.
+
+Task:
+Generate a specific, real-world style date idea that blends their interests.
+It MUST be a real, specific place if possible (e.g., "The Coffee Loft" rather than "a coffee shop").
+You MUST provide a plausible street address (or at least a neighborhood/cross-street) for the location.
+
+Return ONLY a valid JSON object:
+{
+  "title": "Catchy Date Title",
+  "description": "A 2-3 sentence pitch of why this date is perfect for them, mentioning specific shared interests or inside jokes from their answers.",
+  "activityType": "coffee" | "drinks" | "active" | "food" | "culture" | "other",
+  "locationName": "Name of a specific type of place or a real landmark",
+  "address": "A specific street address or neighborhood location string"
+}`;
+
+    try {
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+
+        console.log('--- Date Idea Raw Response ---');
+        console.log(text);
+
+        // Parse JSON (reuse logic)
+        let jsonText = text.trim();
+        const codeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+        if (codeBlockMatch) {
+            jsonText = codeBlockMatch[1].trim();
+        } else {
+            const start = text.indexOf('{');
+            const end = text.lastIndexOf('}');
+            if (start !== -1 && end !== -1) {
+                jsonText = text.substring(start, end + 1);
+            }
+        }
+
+        return JSON.parse(jsonText);
+    } catch (error) {
+        console.error('Error generating date idea:', error);
+        return {
+            title: "Coffee & Conversation",
+            description: "A classic first date to get to know each other better. Based on your shared interests, a cozy cafe would be perfect.",
+            activityType: "coffee",
+            locationName: "Local Cafe",
+            address: "Main Street, Your City"
         };
     }
 }

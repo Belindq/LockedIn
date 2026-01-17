@@ -1,0 +1,89 @@
+Testing Gemini Generation...
+--- Gemini Raw Response ---
+```json
+[
+  {
+    "type": "image",
+    "prompt": "Take a photo of your 'coding fuel' or 'hiking snack' of choice! Bonus points for creativity - try to make it artistic or funny, capturing the essence of what powers your passions.",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "text",
+    "prompt": "Imagine you're designing a mini-game about your partner based on their interests. What's the game's title, genre, and a one-sentence summary of the gameplay?",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "location",
+    "prompt": "Visit a local park or outdoor space. Find a unique spot and take a photo that captures the 'best hiding place' for a pixel from your favorite game! Describe why you chose that specific spot.",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "text",
+    "prompt": "Describe a time you learned something unexpected about yourself or the world through either a hike or a coding project. What was the lesson, and how did it change you?",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "image",
+    "prompt": "Find an object in your home (or create one!) that represents a blend of User A's and User B's interests. It could be a coffee mug decorated with pixel art, or a photograph of a hiking trail marked with coding symbols. Take a photo and explain how it represents the intersection of your worlds.",
+    "timeLimitSeconds": 86400
+  }
+]
+```
+---------------------------
+--- Parsed JSON Text ---
+[
+  {
+    "type": "image",
+    "prompt": "Take a photo of your 'coding fuel' or 'hiking snack' of choice! Bonus points for creativity - try to make it artistic or funny, capturing the essence of what powers your passions.",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "text",
+    "prompt": "Imagine you're designing a mini-game about your partner based on their interests. What's the game's title, genre, and a one-sentence summary of the gameplay?",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "location",
+    "prompt": "Visit a local park or outdoor space. Find a unique spot and take a photo that captures the 'best hiding place' for a pixel from your favorite game! Describe why you chose that specific spot.",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "text",
+    "prompt": "Describe a time you learned something unexpected about yourself or the world through either a hike or a coding project. What was the lesson, and how did it change you?",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "image",
+    "prompt": "Find an object in your home (or create one!) that represents a blend of User A's and User B's interests. It could be a coffee mug decorated with pixel art, or a photograph of a hiking trail marked with coding symbols. Take a photo and explain how it represents the intersection of your worlds.",
+    "timeLimitSeconds": 86400
+  }
+]
+------------------------
+SUCCESS!
+[
+  {
+    "type": "image",
+    "prompt": "Take a photo of your 'coding fuel' or 'hiking snack' of choice! Bonus points for creativity - try to make it artistic or funny, capturing the essence of what powers your passions.",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "text",
+    "prompt": "Imagine you're designing a mini-game about your partner based on their interests. What's the game's title, genre, and a one-sentence summary of the gameplay?",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "location",
+    "prompt": "Visit a local park or outdoor space. Find a unique spot and take a photo that captures the 'best hiding place' for a pixel from your favorite game! Describe why you chose that specific spot.",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "text",
+    "prompt": "Describe a time you learned something unexpected about yourself or the world through either a hike or a coding project. What was the lesson, and how did it change you?",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "image",
+    "prompt": "Find an object in your home (or create one!) that represents a blend of User A's and User B's interests. It could be a coffee mug decorated with pixel art, or a photograph of a hiking trail marked with coding symbols. Take a photo and explain how it represents the intersection of your worlds.",
+    "timeLimitSeconds": 86400
+  }
+]

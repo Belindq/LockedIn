@@ -13,6 +13,10 @@ export interface IQuest extends Document {
         lng: number;
     };
     finalDateTime?: Date;
+    finalDateTitle?: string;
+    finalDateDescription?: string;
+    finalDateActivity?: string;
+    finalDateAddress?: string;
 }
 
 const QuestSchema = new Schema<IQuest>({
@@ -54,7 +58,11 @@ const QuestSchema = new Schema<IQuest>({
         lat: Number,
         lng: Number
     },
-    finalDateTime: Date
+    finalDateTime: Date,
+    finalDateTitle: String,
+    finalDateDescription: String,
+    finalDateActivity: String,
+    finalDateAddress: String
 });
 
 // Compound index for finding active quests by user

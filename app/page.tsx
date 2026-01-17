@@ -17,11 +17,11 @@ export default function Home() {
   }, [user, router]);
 
   return (
-    <div className="h-full flex flex-col items-center justify-center bg-background p-4">
-      <div className="max-w-md w-full text-center space-y-12">
+    <div className="min-h-screen flex flex-col items-center justify-start bg-background p-4">
+      <div className="max-w-md w-full text-center space-y-2 -mt-12">
         {/* Logo */}
-        <div className="flex justify-center mb-8">
-          <img src="/logo.png" alt="LockedIn Logo" className="h-[24rem] object-contain" />
+        <div className="flex justify-center mb-2">
+          <img src="/logo.png" alt="LockedIn Logo" className="h-[32rem] object-contain image-pixelated -ml-8" />
         </div>
 
         {/* Begin Button */}

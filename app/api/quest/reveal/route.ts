@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Quest from '@/models/Quest';
 import User from '@/models/User';
+import Challenge from '@/models/Challenge';
+import ChallengeProgress from '@/models/ChallengeProgress';
 import { isQuestParticipant, isQuestComplete } from '@/lib/quest-utils';
 
 /**
@@ -58,9 +60,9 @@ export async function GET(request: NextRequest) {
             quest.status = 'completed';
             await quest.save();
 
-            // Update user statuses to idle (they can re-enter matching)
-            await User.findByIdAndUpdate(quest.userAId, { status: 'idle' });
-            await User.findByIdAndUpdate(quest.userBId, { status: 'idle' });
+            // Update user statuses to waiting_for_match (they can re-enter matching)
+            await User.findByIdAndUpdate(quest.userAId, { status: 'waiting_for_match' });
+            await User.findByIdAndUpdate(quest.userBId, { status: 'waiting_for_match' });
         }
 
         // Get user's home location for personalized directions
@@ -77,7 +79,7 @@ export async function GET(request: NextRequest) {
         // Note: finalDateLocation and finalDateTime should be set during quest creation
         // For MVP, we'll generate a simple midpoint location
         if (!quest.finalDateLocation || !quest.finalDateTime) {
-            // Get both users for midpoint calculation
+            // Get both users
             const userA = await User.findById(quest.userAId);
             const userB = await User.findById(quest.userBId);
 
@@ -88,21 +90,52 @@ export async function GET(request: NextRequest) {
                 );
             }
 
-            // Calculate midpoint between users
+            // Fetch all responses to feed into AI
+            const challenges = await Challenge.find({ questId: quest._id }).sort({ orderIndex: 1 });
+            const challengeIds = challenges.map(c => c._id);
+            const progress = await ChallengeProgress.find({
+                questId: quest._id,
+                challengeId: { $in: challengeIds }
+            });
+
+            const userAResponses = progress
+                .filter(p => p.userId.toString() === userA._id.toString() && p.submissionText)
+                .map(p => p.submissionText!);
+
+            const userBResponses = progress
+                .filter(p => p.userId.toString() === userB._id.toString() && p.submissionText)
+                .map(p => p.submissionText!);
+
+            // Generate Date Idea via AI
+            // Use User A's location as context
+            const cityContext = `${userA.homeAddress} (Coordinates: ${userA.locationCoordinates.lat.toFixed(4)}, ${userA.locationCoordinates.lng.toFixed(4)})`;
+
+            // Dynamic import to avoid circular dep issues if any
+            const { generateDateIdea } = await import('@/lib/gemini-quest-engine');
+            const dateIdea = await generateDateIdea(userA, userB, userAResponses, userBResponses, cityContext);
+
+            // Calculate exact midpoint for the "Pin" (even if the text says something else, map needs a point)
             const midLat = (userA.locationCoordinates.lat + userB.locationCoordinates.lat) / 2;
             const midLng = (userA.locationCoordinates.lng + userB.locationCoordinates.lng) / 2;
 
-            // Set date to 3 days from now at 7 PM
+            // Set date to 3 days from now
             const dateTime = new Date();
             dateTime.setDate(dateTime.getDate() + 3);
             dateTime.setHours(19, 0, 0, 0);
 
             quest.finalDateLocation = {
-                placeId: 'generated_midpoint',
+                placeId: 'generated_ai_loc',
                 lat: midLat,
                 lng: midLng
             };
             quest.finalDateTime = dateTime;
+
+            // Save AI details
+            quest.finalDateTitle = dateIdea.title;
+            quest.finalDateDescription = dateIdea.description;
+            quest.finalDateActivity = dateIdea.activityType;
+            quest.finalDateAddress = dateIdea.address;
+
             await quest.save();
         }
 
@@ -120,6 +153,12 @@ export async function GET(request: NextRequest) {
                 userLocation: {
                     lat: user.locationCoordinates.lat,
                     lng: user.locationCoordinates.lng
+                },
+                dateDetails: {
+                    title: quest.finalDateTitle,
+                    description: quest.finalDateDescription,
+                    activity: quest.finalDateActivity,
+                    address: quest.finalDateAddress
                 }
             },
             message: 'Congratulations! You\'re LockedIn! 🔒'

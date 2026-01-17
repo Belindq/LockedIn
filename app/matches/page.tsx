@@ -11,7 +11,7 @@ interface MatchStatus {
 
 export default function MatchesPage() {
     const router = useRouter();
-    const [status, setStatus] = useState<'loading' | 'idle' | 'matched'>('loading');
+    const [status, setStatus] = useState<'loading' | 'waitlist' | 'matched'>('loading');
     const [partnerName, setPartnerName] = useState('');
     const [error, setError] = useState('');
 
@@ -33,12 +33,12 @@ export default function MatchesPage() {
                 setStatus('matched');
                 setPartnerName(data.partnerName || 'Unknown');
             } else {
-                setStatus('idle');
+                setStatus('waitlist');
             }
         } catch (err) {
             console.error(err);
             setError('Failed to load match status');
-            setStatus('idle');
+            setStatus('waitlist');
         }
     };
 
@@ -65,23 +65,36 @@ export default function MatchesPage() {
                     </div>
                 )}
 
-                {status === 'idle' && (
+                {status === 'waitlist' && (
                      <div className="text-gray-600">
                         <div className="text-4xl mb-4">⏳</div>
                         <p className="mb-4">You are currently on the waitlist.</p>
                         <p className="text-sm">We ran our matching algorithm every night at 8 PM.</p>
                         <p className="text-sm mt-2">Make sure your profile is complete!</p>
-                        
-                        <button 
-                            onClick={() => router.push('/onboarding')}
-                            className="mt-6 text-indigo-600 hover:text-indigo-800 font-medium"
-                        >
-                            Update Profile
-                        </button>
                     </div>
                 )}
 
                 {error && <p className="text-red-500 mt-4 text-sm">{error}</p>}
+                
+                {/* Debug Button for Hackathon Demo */}
+                <div className="mt-8 border-t pt-4">
+                    <p className="text-xs text-gray-400 mb-2">Debug Control (Hackathon Only)</p>
+                    <button 
+                        onClick={async () => {
+                            try {
+                                const res = await fetch('/api/match/run', { method: 'POST' });
+                                const data = await res.json();
+                                alert('Matching Run Complete: ' + JSON.stringify(data));
+                                window.location.reload();
+                            } catch (e) {
+                                alert('Matching Failed');
+                            }
+                        }}
+                        className="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded"
+                    >
+                        Force Run Matching Algorithm
+                    </button>
+                </div>
              </div>
         </div>
     );

@@ -26,24 +26,24 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-        const res = await fetch('/api/auth/signup', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData),
-        });
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-        const data = await res.json();
+      const data = await res.json();
 
-        if (!res.ok) {
-            throw new Error(data.details || data.error || 'Signup failed');
-        }
+      if (!res.ok) {
+        throw new Error(data.details || data.error || 'Signup failed');
+      }
 
-        // Redirect to Onboarding
-        router.push('/onboarding');
+      // Redirect to Dashboard (which will route to Onboarding if needed)
+      router.push('/dashboard');
     } catch (err: any) {
-        setError(err.message);
+      setError(err.message);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -67,7 +67,7 @@ export default function SignupPage() {
               <span className="block sm:inline">{error}</span>
             </div>
           )}
-          
+
           <div className="space-y-4">
             <input
               name="email"

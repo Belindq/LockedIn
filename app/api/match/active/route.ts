@@ -12,23 +12,28 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        const user = await User.findById(userId);
+        if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+
         const match = await Match.findOne({
             $or: [{ userA: userId }, { userB: userId }],
             status: 'active'
         });
 
-        if (!match) {
-            return NextResponse.json({ hasMatch: false });
+        const response: any = {
+            userStatus: user.status,
+            userId: user._id,
+            hasMatch: !!match
+        };
+
+        if (match) {
+            const partnerId = match.userA.toString() === userId ? match.userB : match.userA;
+            const partner = await User.findById(partnerId).select('firstName');
+            response.matchId = match._id;
+            response.partnerName = partner?.firstName || 'Partner';
         }
 
-        const partnerId = match.userA.toString() === userId ? match.userB : match.userA;
-        const partner = await User.findById(partnerId).select('firstName');
-
-        return NextResponse.json({
-            hasMatch: true,
-            matchId: match._id,
-            partnerName: partner?.firstName || 'Partner'
-        });
+        return NextResponse.json(response);
 
     } catch (error) {
         console.error('Check Match Error:', error);

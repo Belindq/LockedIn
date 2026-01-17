@@ -47,11 +47,14 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Check if quest already exists for this match
-        const existingQuest = await Quest.findOne({ matchId });
+        // Check if quest already exists and is active
+        const existingQuest = await Quest.findOne({ 
+            matchId,
+            status: { $in: ['active', 'pending_acceptance'] }
+        });
         if (existingQuest) {
             return NextResponse.json(
-                { error: 'Quest already exists for this match' },
+                { error: 'Active quest already exists for this match' },
                 { status: 400 }
             );
         }
@@ -135,7 +138,11 @@ export async function POST(request: NextRequest) {
     } catch (error) {
         console.error('Error creating quest:', error);
         return NextResponse.json(
-            { error: 'Internal server error' },
+            {
+                error: 'Internal server error',
+                details: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined
+            },
             { status: 500 }
         );
     }

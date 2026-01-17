@@ -61,9 +61,9 @@ export async function POST(request: NextRequest) {
         quest.status = 'cancelled';
         await quest.save();
 
-        // Update user statuses to idle (they can re-enter matching)
-        await User.findByIdAndUpdate(quest.userAId, { status: 'idle' });
-        await User.findByIdAndUpdate(quest.userBId, { status: 'idle' });
+        // Update user statuses to waiting_for_match (they can re-enter matching)
+        await User.findByIdAndUpdate(quest.userAId, { status: 'waiting_for_match' });
+        await User.findByIdAndUpdate(quest.userBId, { status: 'waiting_for_match' });
 
         return NextResponse.json({
             success: true,

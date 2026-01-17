@@ -51,7 +51,8 @@ export async function PUT(req: Request) {
         user.dealBreakers = dealBreakers || '';
 
         // Update Status
-        user.status = 'idle'; // Or 'waiting_for_match'
+        // After onboarding the user is ready to be matched
+        user.status = 'waiting_for_match';
 
         await user.save();
 

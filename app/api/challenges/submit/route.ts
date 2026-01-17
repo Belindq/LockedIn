@@ -88,6 +88,7 @@ export async function POST(request: NextRequest) {
         // Validate submission based on challenge type
         let faceDetectionWarning = false;
         let imageId = null;
+        let faceDetection = null;
 
         if (challenge.type === 'text') {
             if (!submissionText) {
@@ -107,17 +108,23 @@ export async function POST(request: NextRequest) {
             }
 
             // Run face detection
-            const faceDetection = await detectFaceInImage(submissionImageBase64);
-            faceDetectionWarning = faceDetection.warning;
+            faceDetection = await detectFaceInImage(submissionImageBase64);
 
-            // Store image in MongoDB (simplified - in production use GridFS or cloud storage)
-            // For MVP, we'll just store a reference ID
+            if (faceDetection.blocked) {
+                return NextResponse.json(
+                    { error: 'Face detected! Please obscure your face to maintain mystery.' },
+                    { status: 400 }
+                );
+            }
+
+            faceDetectionWarning = false; // Deprecated concept, but kept for schema compatibility if needed
+
+
+            // Store image in MongoDB (simplified for MVP as requested)
             imageId = new mongoose.Types.ObjectId();
             progress.submissionImageId = imageId;
-            progress.faceDetectionWarning = faceDetectionWarning;
-
-            // TODO: Actually store the image data
-            // This would typically go to GridFS, S3, or similar
+            progress.submissionImageBase64 = submissionImageBase64;
+            progress.faceDetectionWarning = false;
 
         } else if (challenge.type === 'location') {
             if (!submissionLocation || !submissionLocation.lat || !submissionLocation.lng) {
@@ -126,6 +133,27 @@ export async function POST(request: NextRequest) {
                     { status: 400 }
                 );
             }
+            if (!submissionImageBase64) {
+                return NextResponse.json(
+                    { error: 'Photo proof is required for location check-in' },
+                    { status: 400 }
+                );
+            }
+
+            // Run face detection on the check-in photo
+            faceDetection = await detectFaceInImage(submissionImageBase64);
+
+            if (faceDetection.blocked) {
+                return NextResponse.json(
+                    { error: 'Face detected! Check-in photos must not show your face.' },
+                    { status: 400 }
+                );
+            }
+
+            // Store location and image
+            imageId = new mongoose.Types.ObjectId();
+            progress.submissionImageId = imageId;
+            progress.submissionImageBase64 = submissionImageBase64;
             progress.submissionText = JSON.stringify(submissionLocation);
         }
 
@@ -137,7 +165,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
             success: true,
             message: 'Challenge submitted successfully',
-            faceDetectionWarning: faceDetectionWarning || undefined,
+            faceDetectionWarning: false,
+            faceDetectionDebug: faceDetection,
             progressId: progress._id,
             status: progress.status
         });

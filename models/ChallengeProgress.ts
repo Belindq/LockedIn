@@ -6,6 +6,7 @@ export interface IChallengeProgress extends Document {
     status: 'pending' | 'submitted' | 'approved' | 'rejected' | 'expired';
     submissionText?: string;
     submissionImageId?: mongoose.Types.ObjectId;
+    submissionImageBase64?: string;
     submittedAt?: Date;
     faceDetectionWarning?: boolean;
 }
@@ -34,6 +35,9 @@ const ChallengeProgressSchema = new Schema<IChallengeProgress>({
     },
     submissionImageId: {
         type: Schema.Types.ObjectId
+    },
+    submissionImageBase64: {
+        type: String
     },
     submittedAt: {
         type: Date

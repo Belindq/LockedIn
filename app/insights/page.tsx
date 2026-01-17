@@ -40,10 +40,18 @@ export default function InsightsPage() {
         );
     }
 
-    // Combine all insights into a single list for the simple view
-    const allInsights = [...insights].sort((a, b) =>
+    // Determine how many insights are unlocked based on combined progress.
+    // Assuming each challenge completion unlocks an insight (e.g., 5 challenges = 20% each).
+    // For the mock, we simulate this progression.
+    const totalPossibleInsights = 5;
+    const unlockedCount = Math.floor((progress?.combined || 0) / (100 / totalPossibleInsights));
+
+    // Sort revealed insights (newest first)
+    const revealedInsights = [...insights].slice(0, unlockedCount).sort((a, b) =>
         new Date(b.unlockedAt).getTime() - new Date(a.unlockedAt).getTime()
     );
+
+    const hasMoreInsights = unlockedCount < totalPossibleInsights;
 
     return (
         <div className="h-full bg-background flex flex-col">
@@ -51,7 +59,7 @@ export default function InsightsPage() {
             <div className="flex-1 overflow-y-auto pb-32">
                 <div className="px-4 py-8">
                     <div className="space-y-4">
-                        {allInsights.map((insight) => {
+                        {revealedInsights.map((insight) => {
                             const isExpanded = expandedInsightId === insight.id;
                             return (
                                 <Card
@@ -84,6 +92,20 @@ export default function InsightsPage() {
                                 </Card>
                             );
                         })}
+
+                        {/* Locked Placeholder */}
+                        {hasMoreInsights && (
+                            <Card className="bg-card/50 text-gray-400 border-2 border-border border-dashed p-6 flex items-center justify-center text-center min-h-[100px] cursor-not-allowed">
+                                <div>
+                                    <h3 className="text-[16px] font-pixel uppercase tracking-widest mb-1">
+                                        Locked Reveal
+                                    </h3>
+                                    <p className="text-[10px] font-pixel opacity-50">
+                                        Complete more quests to unlock
+                                    </p>
+                                </div>
+                            </Card>
+                        )}
                     </div>
                 </div>
             </div>
@@ -92,21 +114,21 @@ export default function InsightsPage() {
             <div className="absolute bottom-0 left-0 right-0 bg-background border-t-4 border-border p-4 shadow-lg z-40">
                 {/* Avatar icons and progress */}
                 <div className="flex items-center gap-4 mb-4">
-                    {/* User avatar */}
+                    {/* Partner avatar */}
                     <div
                         className="relative"
-                        onMouseEnter={() => setHoveredAvatar("user")}
+                        onMouseEnter={() => setHoveredAvatar("partner")}
                         onMouseLeave={() => setHoveredAvatar(null)}
                     >
-                        <div className="w-12 h-12 bg-card border-2 border-border flex items-center justify-center text-[20px] cursor-pointer hover:border-primary transition-colors text-foreground">
+                        <div className="w-12 h-12 bg-card border-2 border-border flex items-center justify-center text-[20px] cursor-pointer hover:border-secondary transition-colors text-foreground">
                             👤
                         </div>
-                        {hoveredAvatar === "user" && (
+                        {hoveredAvatar === "partner" && (
                             <div className="absolute bottom-full left-0 mb-2 w-48 z-50">
                                 <ProgressBar
-                                    value={progress.user}
-                                    label="Your Progress"
-                                    variant="user"
+                                    value={progress.partner}
+                                    label={`${partner?.firstName || 'Partner'}'s Progress`}
+                                    variant="partner"
                                 />
                             </div>
                         )}
@@ -131,27 +153,27 @@ export default function InsightsPage() {
                         {hoveredAvatar === "partner" && (
                             <ProgressBar
                                 value={progress.partner}
-                                label={`${partner?.firstName}'s Progress`}
+                                label={`${partner?.firstName || 'Partner'}'s Progress`}
                                 variant="partner"
                             />
                         )}
                     </div>
 
-                    {/* Partner avatar */}
+                    {/* User avatar */}
                     <div
                         className="relative"
-                        onMouseEnter={() => setHoveredAvatar("partner")}
+                        onMouseEnter={() => setHoveredAvatar("user")}
                         onMouseLeave={() => setHoveredAvatar(null)}
                     >
-                        <div className="w-12 h-12 bg-card border-2 border-border flex items-center justify-center text-[20px] cursor-pointer hover:border-secondary transition-colors text-foreground">
+                        <div className="w-12 h-12 bg-card border-2 border-border flex items-center justify-center text-[20px] cursor-pointer hover:border-primary transition-colors text-foreground">
                             👤
                         </div>
-                        {hoveredAvatar === "partner" && (
+                        {hoveredAvatar === "user" && (
                             <div className="absolute bottom-full right-0 mb-2 w-48 z-50">
                                 <ProgressBar
-                                    value={progress.partner}
-                                    label={`${partner?.firstName}'s Progress`}
-                                    variant="partner"
+                                    value={progress.user}
+                                    label="Your Progress"
+                                    variant="user"
                                 />
                             </div>
                         )}

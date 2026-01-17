@@ -18,7 +18,7 @@ export function Button({
 
     const variantStyles = {
         primary:
-            "bg-white text-primary border-2 border-primary hover:bg-primary hover:text-white focus:ring-primary rounded-lg",
+            "bg-white text-primary border-2 border-primary hover:bg-primary hover:text-white dark:bg-primary dark:text-white dark:hover:bg-white dark:hover:text-primary focus:ring-primary rounded-lg",
         secondary:
             "border-2 border-border bg-transparent text-foreground hover:bg-card focus:ring-border",
         ghost:

@@ -117,9 +117,9 @@ export async function GET(request: NextRequest) {
                 expiresAt: currentQuest.expiresAt,
                 userAProgress,
                 userBProgress,
-                partnerId: partnerId
+                partnerId: partnerId,
+                partnerName: partnerUser?.firstName || 'Partner'
             },
-            partnerName: partnerUser?.firstName || 'Partner', // Added partnerName
             challenges: challengesWithStatus,
             currentChallengeIndex: myCurrentIndex === -1 ? challenges.length : myCurrentIndex,
             partnerCurrentChallengeIndex: partnerCurrentIndex === -1 ? challenges.length : partnerCurrentIndex,

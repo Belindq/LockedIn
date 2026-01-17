@@ -57,10 +57,13 @@ export default function MatchesPage() {
                 {status === 'matched' && (
                     <div className="bg-green-50 text-green-800 p-6 rounded-lg animate-fade-in-up">
                         <div className="text-4xl mb-2">🎉</div>
-                        <h2 className="text-xl font-bold mb-2">You have a match!</h2>
-                        <p className="text-lg">You are locked in with <span className="font-bold text-indigo-600">{partnerName}</span>.</p>
-                        <button className="mt-6 bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-indigo-700 transition">
-                            Start Chatting
+                        <h2 className="text-xl font-bold mb-2">You successfully matched with {partnerName}!</h2>
+                        <p className="text-lg mb-6">Click here to begin your quest together.</p>
+                        <button 
+                            onClick={() => router.push('/quest/active')}
+                            className="bg-indigo-600 text-white px-8 py-3 rounded-full hover:bg-indigo-700 transition font-bold shadow-lg"
+                        >
+                            Begin Quest
                         </button>
                     </div>
                 )}

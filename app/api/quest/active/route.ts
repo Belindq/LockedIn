@@ -15,12 +15,13 @@ export async function GET(request: NextRequest) {
     try {
         await connectDB();
 
-        // TODO: Get userId from session/auth
-        const { searchParams } = new URL(request.url);
-        const userId = searchParams.get('userId');
+        const userId = request.headers.get('x-user-id');
+        // fallback for testing if needed, or remove
+        // const { searchParams } = new URL(request.url);
+        // const userId = headersId || searchParams.get('userId');
 
         if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-            return NextResponse.json({ error: 'Valid userId is required' }, { status: 400 });
+            return NextResponse.json({ error: 'Valid userId is required (auth)' }, { status: 401 });
         }
         const userObjectId = new mongoose.Types.ObjectId(userId);
 

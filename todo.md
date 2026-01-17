@@ -151,6 +151,28 @@ Quest states:
 Cancelled/expired quests are disposable.
 Users may re-enter matching afterward.
 
+# Quest System Implementation Plan
+
+## Phase 1: Models (Completed)
+- [x] Create Match, Quest, Challenge, and ChallengeProgress schemas.
+
+## Phase 2: AI Integration (Completed)
+- [x] Implement Gemini-based quest generation and face detection logic.
+
+## Phase 3: API Endpoints (In Progress)
+- [x] POST /api/quest/create (Initialization)
+- [x] POST /api/challenges/submit (Submission + AI Face Check)
+- [x] POST /api/challenges/approve (Partner verification)
+- [ ] GET /api/quest/active (State retrieval + Expiration check)
+- [ ] GET /api/challenges/progress (Side-by-side progress view)
+- [ ] POST /api/quest/nudge (Interaction without chat)
+- [ ] POST /api/quest/cancel (Disposal)
+- [ ] GET /api/quest/reveal (Final date reveal)
+
+## Phase 4: Validation & Logic
+- [x] On-read expiration logic.
+- [x] Security: Participant-only access.
+
 ────────────────────────
 TIME & EXPIRATION
 ────────────────────────

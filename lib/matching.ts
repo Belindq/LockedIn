@@ -72,6 +72,19 @@ export async function runMatchingAlgorithm() {
             const validB = await User.findOne({ _id: userB, status: 'waiting_for_match' });
 
             if (validA && validB) {
+                // Check if these users have been permanently blocked from matching
+                const blockedMatch = await Match.findOne({
+                    $or: [
+                        { userA: validA._id, userB: validB._id, permanentlyBlocked: true },
+                        { userA: validB._id, userB: validA._id, permanentlyBlocked: true }
+                    ]
+                });
+
+                if (blockedMatch) {
+                    console.log(`Skipping permanently blocked pair: ${validA._id} and ${validB._id}`);
+                    continue; // Skip this pair
+                }
+
                 const match = await Match.create({
                     userA: validA._id,
                     userB: validB._id,

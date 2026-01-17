@@ -26,9 +26,10 @@ export async function GET(request: NextRequest) {
         }
         const userObjectId = new mongoose.Types.ObjectId(userId);
 
-        // Find current quest for this user (active, completed, or expired)
+        // Find current quest for this user (active, completed, or expired - but NOT cancelled)
         const quest = await Quest.findOne({
-            $or: [{ userAId: userObjectId }, { userBId: userObjectId }]
+            $or: [{ userAId: userObjectId }, { userBId: userObjectId }],
+            status: { $ne: 'cancelled' } // Exclude cancelled quests
         }).sort({ createdAt: -1 });
 
         if (!quest) {

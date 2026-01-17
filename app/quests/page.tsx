@@ -21,6 +21,28 @@ export default function QuestsPage() {
         fetchActiveQuest();
     }, []);
 
+    // Poll for quest status changes (detect if partner unmatched)
+    useEffect(() => {
+        if (!activeQuest) return;
+
+        const pollInterval = setInterval(async () => {
+            try {
+                const res = await fetch(`/api/quest/active`, { cache: 'no-store' });
+
+                // If quest no longer exists (404), partner has unmatched
+                if (res.status === 404) {
+                    clearInterval(pollInterval);
+                    alert('Your partner has unmatched. You have been returned to the matching pool.');
+                    router.push('/matches');
+                }
+            } catch (err) {
+                console.error('Error polling quest status:', err);
+            }
+        }, 5000); // Poll every 5 seconds
+
+        return () => clearInterval(pollInterval); // Cleanup on unmount
+    }, [activeQuest, router]);
+
     const fetchActiveQuest = async () => {
         setLoading(true);
         try {
@@ -430,19 +452,42 @@ export default function QuestsPage() {
                         </div>
                     </div>
 
-                    {/* Exit button */}
+                    {/* Unmatch button */}
                     <div className="flex justify-center">
                         <Button
                             variant="destructive"
-                            onClick={() => {
-                                if (confirm('Are you sure you want to unmatch? This will end your quest.')) {
-                                    // TODO: Call unmatch API
-                                    router.push('/dashboard');
+                            onClick={async () => {
+                                if (confirm('Are you sure you want to unmatch? This will end your quest and you will not be matched with this person again.')) {
+                                    setLoading(true);
+                                    try {
+                                        const res = await fetch('/api/quest/cancel', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({
+                                                questId: activeQuest.quest.id
+                                            })
+                                        });
+
+                                        const data = await res.json();
+
+                                        if (res.ok) {
+                                            // Redirect to matches page
+                                            router.push('/matches');
+                                        } else {
+                                            alert(`Unmatch failed: ${data.error || 'Unknown error'}`);
+                                            setLoading(false);
+                                        }
+                                    } catch (err) {
+                                        console.error('Unmatch error:', err);
+                                        alert('Failed to unmatch. Please try again.');
+                                        setLoading(false);
+                                    }
                                 }
                             }}
-                            className="text-[10px] bg-background border-2 border-border !text-black dark:!text-white font-bold hover:bg-red-500 hover:!text-white hover:border-red-500 text-xs px-8 py-2 font-pixel"
+                            disabled={loading}
+                            className="text-[10px] bg-background border-2 border-border !text-black dark:!text-white font-bold hover:bg-red-500 hover:!text-white hover:border-red-500 text-xs px-8 py-2 font-pixel disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            UNMATCH
+                            {loading ? 'UNMATCHING...' : 'UNMATCH'}
                         </Button>
                     </div>
                 </div>

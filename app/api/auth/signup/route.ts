@@ -7,10 +7,17 @@ import { signSession } from '@/lib/auth';
 export async function POST(req: Request) {
     try {
         await connectDB();
-        const body = await req.json();
-        const { email, password, firstName, lastName, age, gender, sexuality, homeAddress, locationCoordinates } = body;
+        let body;
+        try {
+            body = await req.json();
+        } catch (e) {
+            return NextResponse.json({ error: 'Invalid JSON body', details: 'Request body is empty or malformed' }, { status: 400 });
+        }
 
-        if (!email || !password || !firstName || !lastName || !age || !gender || !sexuality || !homeAddress || !locationCoordinates) {
+        const { email, password } = body;
+
+        // Basic field validation
+        if (!email || !password) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
@@ -24,13 +31,6 @@ export async function POST(req: Request) {
         const user = await User.create({
             email,
             passwordHash,
-            firstName,
-            lastName,
-            age,
-            gender,
-            sexuality,
-            homeAddress,
-            locationCoordinates,
             status: 'onboarding',
         });
 
@@ -47,6 +47,6 @@ export async function POST(req: Request) {
         return response;
     } catch (error) {
         console.error('Signup error:', error);
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({ error: 'Internal Server Error', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
     }
 }

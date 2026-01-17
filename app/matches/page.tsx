@@ -99,7 +99,7 @@ export default function MatchesPage() {
                 )}
 
                 {/* Debug Control */}
-                <div className="hidden mt-8 pt-6 border-t-2 border-border border-dashed">
+                <div className="mt-8 pt-6 border-t-2 border-border border-dashed">
                     <p className="text-[10px] uppercase font-bold text-gray-400 mb-3 tracking-widest">
                         Debug Zone
                     </p>
@@ -109,7 +109,8 @@ export default function MatchesPage() {
                             try {
                                 const res = await fetch('/api/match/run', { method: 'POST' });
                                 const data = await res.json();
-                                alert('Matching Algorithm Run: ' + JSON.stringify(data));
+                                console.log('Match Result:', data);
+                                alert('Matching Algorithm Run!\n\nCheck server console for details.\nResult: ' + JSON.stringify(data, null, 2));
                                 window.location.reload();
                             } catch (e) {
                                 alert('Matching Failed');

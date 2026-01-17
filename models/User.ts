@@ -25,7 +25,7 @@ export interface IUser extends Document {
     mustHaves: string;
     niceToHaves: string;
     dealBreakers: string;
-    status: 'onboarding' | 'idle' | 'waiting_for_match' | 'matched';
+    status: 'onboarding' | 'waiting_for_match' | 'matched';
     createdAt: Date;
 }
 
@@ -105,7 +105,7 @@ const UserSchema = new Schema<IUser>({
     },
     status: {
         type: String,
-        enum: ['onboarding', 'idle', 'waiting_for_match', 'matched'],
+        enum: ['onboarding', 'waiting_for_match', 'matched'],
         default: 'onboarding',
         required: true
     },

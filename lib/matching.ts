@@ -27,7 +27,7 @@ export async function runMatchingAlgorithm() {
         dealBreakers: u.dealBreakers, // string
     }));
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const prompt = `
     You are a professional matchmaker. Match these users based on their data.
@@ -86,8 +86,17 @@ export async function runMatchingAlgorithm() {
 
         return { matches: createdMatches, count: createdMatches.length };
 
-    } catch (error) {
-        console.error('Gemini Matching Error:', error);
+    } catch (error: any) {
+        console.error('Gemini Matching Error Detailed:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+        if (error.response) {
+            // Try/catch just in case accessing response.text() fails
+            try {
+                const errorText = await error.response.text();
+                console.error('Gemini Response Error:', errorText);
+            } catch (e) {
+                console.error('Could not read error response text');
+            }
+        }
         throw error;
     }
 }

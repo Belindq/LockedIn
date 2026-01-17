@@ -26,7 +26,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: true, result });
     } catch (error) {
         console.error('Match Run Error:', error);
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({ error: error instanceof Error ? error.message : String(error) }, { status: 500 });
     }
 }
 

@@ -1,0 +1,3 @@
+{
+  "/api/admin/migrate-status/route": "app/api/admin/migrate-status/route.js"
+}

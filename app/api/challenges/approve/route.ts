@@ -17,7 +17,12 @@ export async function POST(request: NextRequest) {
 
         // TODO: Get userId from session/auth
         const body = await request.json();
-        const { challengeId, userId, approve } = body;
+        let { challengeId, userId, approve } = body;
+
+        const headerUserId = request.headers.get('x-user-id');
+        if (headerUserId) {
+            userId = headerUserId;
+        }
 
         if (!challengeId || !userId || approve === undefined) {
             return NextResponse.json(

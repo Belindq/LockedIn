@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
         // TODO: Get userId from session/auth
         const { searchParams } = new URL(request.url);
         const questId = searchParams.get('questId');
-        const userId = searchParams.get('userId');
+        const userId = request.headers.get('x-user-id') || searchParams.get('userId');
 
         if (!questId || !userId) {
             return NextResponse.json(

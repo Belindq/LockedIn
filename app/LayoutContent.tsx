@@ -10,8 +10,13 @@ export function LayoutContent({ children }: { children: ReactNode }) {
     const { user } = useUser();
 
     // Don't show TopNav on welcome, login, signup, avatar, questionnaire, or loading pages
-    const hideNavRoutes = ["/", "/login", "/signup", "/avatar", "/questionnaire", "/loading"];
-    const shouldShowNav = !hideNavRoutes.includes(pathname || "") && user.status !== "onboarding";
+    const hideNavRoutes = ["/", "/login", "/signup", "/avatar", "/questionnaire", "/loading", "/onboarding"];
+
+    // Always show nav on quests, matches, dashboard, insights, gallery
+    const alwaysShowNavRoutes = ["/quests", "/matches", "/dashboard", "/insights", "/gallery"];
+    const isAlwaysShowRoute = alwaysShowNavRoutes.some(route => pathname?.startsWith(route));
+
+    const shouldShowNav = isAlwaysShowRoute || (!hideNavRoutes.includes(pathname || "") && user.status !== "onboarding");
 
     return (
         <>

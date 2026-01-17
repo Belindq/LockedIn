@@ -1,13 +1,19 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
+export const GENDER_OPTIONS = ['male', 'female', 'non-binary', 'other', 'prefer_not_to_say'] as const;
+export const SEXUALITY_OPTIONS = ['heterosexual', 'gay', 'lesbian', 'bisexual', 'pansexual', 'asexual', 'other', 'prefer_not_to_say'] as const;
+
+export type Gender = typeof GENDER_OPTIONS[number];
+export type Sexuality = typeof SEXUALITY_OPTIONS[number];
+
 export interface IUser extends Document {
     email: string;
     passwordHash: string;
     firstName: string;
     lastName: string;
     age: number;
-    gender: string;
-    sexuality: string;
+    gender: Gender;
+    sexuality: Sexuality;
     homeAddress: string;
     locationCoordinates: {
         lat: number;
@@ -50,10 +56,12 @@ const UserSchema = new Schema<IUser>({
     },
     gender: {
         type: String,
+        enum: GENDER_OPTIONS,
         required: true
     },
     sexuality: {
         type: String,
+        enum: SEXUALITY_OPTIONS,
         required: true
     },
     homeAddress: {

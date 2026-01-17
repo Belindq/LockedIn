@@ -242,7 +242,17 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$auth$2e$ts__$5b$app$2
 async function POST(req) {
     try {
         await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"])();
-        const body = await req.json();
+        let body;
+        try {
+            body = await req.json();
+        } catch (e) {
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                error: 'Invalid JSON body',
+                details: 'Request body is empty or malformed'
+            }, {
+                status: 400
+            });
+        }
         const { email, password, firstName, lastName, age, gender, sexuality, homeAddress, locationCoordinates } = body;
         if (!email || !password || !firstName || !lastName || !age || !gender || !sexuality || !homeAddress || !locationCoordinates) {
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
@@ -295,7 +305,8 @@ async function POST(req) {
     } catch (error) {
         console.error('Signup error:', error);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            error: 'Internal Server Error'
+            error: 'Internal Server Error',
+            details: error instanceof Error ? error.message : String(error)
         }, {
             status: 500
         });

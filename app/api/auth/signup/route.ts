@@ -3,16 +3,32 @@ import bcrypt from 'bcryptjs';
 import connectDB from '@/lib/db';
 import User from '@/models/User';
 import { signSession } from '@/lib/auth';
+import { validateAddress } from '@/lib/address';
 
 export async function POST(req: Request) {
     try {
         await connectDB();
-        const body = await req.json();
-        const { email, password, firstName, lastName, age, gender, sexuality, homeAddress, locationCoordinates } = body;
+        let body;
+        try {
+            body = await req.json();
+        } catch (e) {
+            return NextResponse.json({ error: 'Invalid JSON body', details: 'Request body is empty or malformed' }, { status: 400 });
+        }
 
-        if (!email || !password || !firstName || !lastName || !age || !gender || !sexuality || !homeAddress || !locationCoordinates) {
+        const { email, password, firstName, lastName, age, gender, sexuality, homeAddress } = body;
+
+        // Basic field validation
+        if (!email || !password || !firstName || !lastName || !age || !gender || !sexuality || !homeAddress) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
+
+        // Validate address
+        const addressValidation = await validateAddress(homeAddress);
+        if (!addressValidation.isValid || !addressValidation.coordinates) {
+            return NextResponse.json({ error: 'Invalid address', details: 'Unable to verify the provided home address' }, { status: 400 });
+        }
+
+        const locationCoordinates = addressValidation.coordinates;
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -29,7 +45,7 @@ export async function POST(req: Request) {
             age,
             gender,
             sexuality,
-            homeAddress,
+            homeAddress: addressValidation.formattedAddress || homeAddress, // Use formatted address if available
             locationCoordinates,
             status: 'onboarding',
         });
@@ -47,6 +63,6 @@ export async function POST(req: Request) {
         return response;
     } catch (error) {
         console.error('Signup error:', error);
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({ error: 'Internal Server Error', details: error instanceof Error ? error.message : String(error) }, { status: 500 });
     }
 }

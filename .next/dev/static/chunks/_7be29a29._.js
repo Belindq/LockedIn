@@ -120,8 +120,9 @@ function MatchesPage() {
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            onClick: ()=>router.push('/dashboard'),
                             className: "mt-6 bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-indigo-700 transition",
-                            children: "Start Chatting"
+                            children: "Go to Quest"
                         }, void 0, false, {
                             fileName: "[project]/app/matches/page.tsx",
                             lineNumber: 62,
@@ -141,7 +142,7 @@ function MatchesPage() {
                             children: "⏳"
                         }, void 0, false, {
                             fileName: "[project]/app/matches/page.tsx",
-                            lineNumber: 70,
+                            lineNumber: 73,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -149,7 +150,7 @@ function MatchesPage() {
                             children: "You are currently on the waitlist."
                         }, void 0, false, {
                             fileName: "[project]/app/matches/page.tsx",
-                            lineNumber: 71,
+                            lineNumber: 74,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -157,7 +158,7 @@ function MatchesPage() {
                             children: "We ran our matching algorithm every night at 8 PM."
                         }, void 0, false, {
                             fileName: "[project]/app/matches/page.tsx",
-                            lineNumber: 72,
+                            lineNumber: 75,
                             columnNumber: 25
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -165,21 +166,21 @@ function MatchesPage() {
                             children: "Make sure your profile is complete!"
                         }, void 0, false, {
                             fileName: "[project]/app/matches/page.tsx",
-                            lineNumber: 73,
+                            lineNumber: 76,
                             columnNumber: 25
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/matches/page.tsx",
-                    lineNumber: 69,
-                    columnNumber: 22
+                    lineNumber: 72,
+                    columnNumber: 21
                 }, this),
                 error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                     className: "text-red-500 mt-4 text-sm",
                     children: error
                 }, void 0, false, {
                     fileName: "[project]/app/matches/page.tsx",
-                    lineNumber: 77,
+                    lineNumber: 80,
                     columnNumber: 27
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -190,7 +191,7 @@ function MatchesPage() {
                             children: "Debug Control (Hackathon Only)"
                         }, void 0, false, {
                             fileName: "[project]/app/matches/page.tsx",
-                            lineNumber: 81,
+                            lineNumber: 84,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -210,20 +211,20 @@ function MatchesPage() {
                             children: "Force Run Matching Algorithm"
                         }, void 0, false, {
                             fileName: "[project]/app/matches/page.tsx",
-                            lineNumber: 82,
+                            lineNumber: 85,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/matches/page.tsx",
-                    lineNumber: 80,
+                    lineNumber: 83,
                     columnNumber: 17
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/matches/page.tsx",
             lineNumber: 47,
-            columnNumber: 14
+            columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/matches/page.tsx",

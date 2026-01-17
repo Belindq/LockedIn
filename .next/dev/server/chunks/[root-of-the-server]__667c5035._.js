@@ -299,6 +299,12 @@ async function GET(req) {
                 status: 401
             });
         }
+        const user = await __TURBOPACK__imported__module__$5b$project$5d2f$models$2f$User$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].findById(userId);
+        if (!user) return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            error: 'User not found'
+        }, {
+            status: 404
+        });
         const match = await __TURBOPACK__imported__module__$5b$project$5d2f$models$2f$Match$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].findOne({
             $or: [
                 {
@@ -310,18 +316,18 @@ async function GET(req) {
             ],
             status: 'active'
         });
-        if (!match) {
-            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-                hasMatch: false
-            });
+        const response = {
+            userStatus: user.status,
+            userId: user._id,
+            hasMatch: !!match
+        };
+        if (match) {
+            const partnerId = match.userA.toString() === userId ? match.userB : match.userA;
+            const partner = await __TURBOPACK__imported__module__$5b$project$5d2f$models$2f$User$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].findById(partnerId).select('firstName');
+            response.matchId = match._id;
+            response.partnerName = partner?.firstName || 'Partner';
         }
-        const partnerId = match.userA.toString() === userId ? match.userB : match.userA;
-        const partner = await __TURBOPACK__imported__module__$5b$project$5d2f$models$2f$User$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].findById(partnerId).select('firstName');
-        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            hasMatch: true,
-            matchId: match._id,
-            partnerName: partner?.firstName || 'Partner'
-        });
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(response);
     } catch (error) {
         console.error('Check Match Error:', error);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({

@@ -3,3 +3,354 @@
 [00:00:06.374] Server  LOG     ✓ Ready in 5.1s
 [00:00:14.565] Server  LOG     ○ Compiling /login ...
 [00:00:18.181] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:05:49.714] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:09:42.122] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:12:54.999] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:13:02.648] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:13:03.489] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:13:10.875] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:13:12.227] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:13:15.331] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:13:18.735] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:14:41.604] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:14:42.642] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:15:17.219] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:15:18.371] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:16:45.528] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:17:08.640] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:20:09.720] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:20:11.979] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:20:14.063] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:20:18.595] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:20:19.534] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:20:28.802] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:21:09.702] Server  LOG     Generating quest for match 696bf6e678367124da9f43b2...
+[00:21:12.339] Server  LOG     --- Gemini Raw Response ---
+[00:21:12.342] Server  LOG     ```json
+[
+  {
+    "type": "image",
+    "prompt": "Pack a creative 'emergency hiking kit' using only items you already have at home. No buying anything! Take a photo of your kit and explain why each item made the cut.",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "text",
+    "prompt": "Imagine you're writing a short sci-fi scene set in your favorite coffee shop. User A writes the first paragraph, User B writes the second paragraph, and so on. Each paragraph should be roughly 5 sentences, and try to build on each other's ideas! Don't overthink it - just have fun!",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "image",
+    "prompt": "Find an interesting book at home and recreate the cover using only food. Take a picture and share your culinary cover art!",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "location",
+    "prompt": "Visit a local library or bookstore and find a book that you think the other person would absolutely love. Send them a picture of the book with a short explanation of why you chose it for them. No buying necessary!",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "text",
+    "prompt": "Share a time when honesty, even when difficult, led to a positive outcome. What did you learn from the experience?",
+    "timeLimitSeconds": 3600
+  }
+]
+```
+[00:21:12.343] Server  LOG     ---------------------------
+[00:21:12.344] Server  LOG     --- Parsed JSON Text ---
+[00:21:12.345] Server  LOG     [
+  {
+    "type": "image",
+    "prompt": "Pack a creative 'emergency hiking kit' using only items you already have at home. No buying anything! Take a photo of your kit and explain why each item made the cut.",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "text",
+    "prompt": "Imagine you're writing a short sci-fi scene set in your favorite coffee shop. User A writes the first paragraph, User B writes the second paragraph, and so on. Each paragraph should be roughly 5 sentences, and try to build on each other's ideas! Don't overthink it - just have fun!",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "image",
+    "prompt": "Find an interesting book at home and recreate the cover using only food. Take a picture and share your culinary cover art!",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "location",
+    "prompt": "Visit a local library or bookstore and find a book that you think the other person would absolutely love. Send them a picture of the book with a short explanation of why you chose it for them. No buying necessary!",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "text",
+    "prompt": "Share a time when honesty, even when difficult, led to a positive outcome. What did you learn from the experience?",
+    "timeLimitSeconds": 3600
+  }
+]
+[00:21:12.346] Server  LOG     ------------------------
+[00:21:13.538] Server  LOG     Quest created with 5 challenges.
+[00:21:13.545] Server  ERROR   Gemini Matching Error Detailed: "{\"message\":\"User validation failed: passwordHash: Path `passwordHash` is required.\",\"errors\":{},\"_message\":\"User validation failed\"}"
+[00:21:14.096] Server  ERROR   Match Run Error: ValidationError: passwordHash: Path `passwordHash` is required.
+[00:21:15.841] Server  LOG     Generating quest for match 696bf6ec78367124da9f43db...
+[00:21:17.869] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:21:18.574] Server  LOG     --- Gemini Raw Response ---
+[00:21:18.576] Server  LOG     ```json
+[
+  {
+    "type": "image",
+    "prompt": "Find a spot on a hiking trail (it can be a local park!) that looks like it could be a setting from a Sci-Fi novel. Take a photo and share why you chose that spot – what makes it feel futuristic or otherworldly?",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "text",
+    "prompt": "Imagine you're co-writing a children's book about honesty. What's one creative, fantastical scenario you'd include to teach the importance of telling the truth?",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "image",
+    "prompt": "Bake or cook something together using a recipe you find in a Sci-Fi book or movie (even if it's just mentioned, get creative!). Take a photo of your creation and tell the story of where the recipe came from. If you have a picture of the original, share that as well!",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "location",
+    "prompt": "Visit a local independent bookstore or library (together or separately). Each of you should find a book the other person *absolutely* needs to read. Share the title and author with each other, and explain why you chose it. Bonus points for purchasing/borrowing it!",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "text",
+    "prompt": "If your families were fictional characters in a TV show, what would the show be called and what would be the one-sentence logline?",
+    "timeLimitSeconds": 3600
+  }
+]
+```
+[00:21:18.577] Server  LOG     ---------------------------
+[00:21:18.578] Server  LOG     --- Parsed JSON Text ---
+[00:21:18.580] Server  LOG     [
+  {
+    "type": "image",
+    "prompt": "Find a spot on a hiking trail (it can be a local park!) that looks like it could be a setting from a Sci-Fi novel. Take a photo and share why you chose that spot – what makes it feel futuristic or otherworldly?",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "text",
+    "prompt": "Imagine you're co-writing a children's book about honesty. What's one creative, fantastical scenario you'd include to teach the importance of telling the truth?",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "image",
+    "prompt": "Bake or cook something together using a recipe you find in a Sci-Fi book or movie (even if it's just mentioned, get creative!). Take a photo of your creation and tell the story of where the recipe came from. If you have a picture of the original, share that as well!",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "location",
+    "prompt": "Visit a local independent bookstore or library (together or separately). Each of you should find a book the other person *absolutely* needs to read. Share the title and author with each other, and explain why you chose it. Bonus points for purchasing/borrowing it!",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "text",
+    "prompt": "If your families were fictional characters in a TV show, what would the show be called and what would be the one-sentence logline?",
+    "timeLimitSeconds": 3600
+  }
+]
+[00:21:18.581] Server  LOG     ------------------------
+[00:21:19.690] Server  LOG     Quest created with 5 challenges.
+[00:21:19.693] Server  ERROR   Gemini Matching Error Detailed: "{\"message\":\"User validation failed: passwordHash: Path `passwordHash` is required.\",\"errors\":{},\"_message\":\"User validation failed\"}"
+[00:21:19.861] Server  ERROR   Match Run Error: ValidationError: passwordHash: Path `passwordHash` is required.
+[00:21:23.947] Server  LOG     Generating quest for match 696bf6f478367124da9f4408...
+[00:21:26.376] Server  LOG     --- Gemini Raw Response ---
+[00:21:26.377] Server  LOG     ```json
+[
+  {
+    "type": "text",
+    "prompt": "Describe your ideal hiking companion (besides each other, obviously!). Think character traits, maybe even a fictional character from a book or movie.",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "image",
+    "prompt": "Find a book or sci-fi object and stage it with a coffee mug to create a funny or thought-provoking scene. Share a photo and explain the story behind it.",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "location",
+    "prompt": "Visit a local independent bookstore or coffee shop. Each person should buy a treat (a book, a coffee, or pastry) for the other, based on what they've learned about each other so far. Post a picture of you giving the treat to the other.",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "text",
+    "prompt": "Imagine you are writing a children's book together about a cooking adventure. What is the title, and give a brief (3-sentence) summary of the plot?",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "image",
+    "prompt": "Bake or prepare a dish that reminds you of your family. Post a photo of the dish and explain why it brings back those memories.",
+    "timeLimitSeconds": 86400
+  }
+]
+```
+[00:21:26.378] Server  LOG     ---------------------------
+[00:21:26.379] Server  LOG     --- Parsed JSON Text ---
+[00:21:26.380] Server  LOG     [
+  {
+    "type": "text",
+    "prompt": "Describe your ideal hiking companion (besides each other, obviously!). Think character traits, maybe even a fictional character from a book or movie.",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "image",
+    "prompt": "Find a book or sci-fi object and stage it with a coffee mug to create a funny or thought-provoking scene. Share a photo and explain the story behind it.",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "location",
+    "prompt": "Visit a local independent bookstore or coffee shop. Each person should buy a treat (a book, a coffee, or pastry) for the other, based on what they've learned about each other so far. Post a picture of you giving the treat to the other.",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "text",
+    "prompt": "Imagine you are writing a children's book together about a cooking adventure. What is the title, and give a brief (3-sentence) summary of the plot?",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "image",
+    "prompt": "Bake or prepare a dish that reminds you of your family. Post a photo of the dish and explain why it brings back those memories.",
+    "timeLimitSeconds": 86400
+  }
+]
+[00:21:26.381] Server  LOG     ------------------------
+[00:21:27.482] Server  LOG     Quest created with 5 challenges.
+[00:21:27.486] Server  ERROR   Gemini Matching Error Detailed: "{\"message\":\"User validation failed: passwordHash: Path `passwordHash` is required.\",\"errors\":{},\"_message\":\"User validation failed\"}"
+[00:21:27.653] Server  ERROR   Match Run Error: ValidationError: passwordHash: Path `passwordHash` is required.
+[00:24:44.647] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:24:55.405] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:25:00.501] Server  LOG     Generating quest for match 696bf7cd78367124da9f44d3...
+[00:25:03.198] Server  LOG     --- Gemini Raw Response ---
+[00:25:03.200] Server  LOG     ```json
+[
+  {
+    "type": "location",
+    "prompt": "Time for a mini-adventure! Find the highest accessible point in your neighborhood that isn't a building (a hill, a scenic overlook, etc.) and snap a photo looking out. Bonus points for a dramatic pose!",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "image",
+    "prompt": "Let's see your competitive side! Find a local park with a badminton court and stage a hilariously dramatic photo of you either winning or losing a match...against an imaginary opponent (or a friend who's willing to play along). Include a caption explaining the epic 'battle'.",
+    "timeLimitSeconds": 43200
+  },
+  {
+    "type": "text",
+    "prompt": "Since you both value honesty, let's try this: describe a time you learned a valuable lesson from a video game, sports moment, or outdoor activity that you can apply to real life. Be honest and share what you learned!",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "text",
+    "prompt": "Time to get creative! Write a short poem (limerick, haiku, anything goes!) about the joys of a chocolate croissant after a long hike or a challenging Valorant match. Make it as ridiculous or sincere as you want!",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "image",
+    "prompt": "Embrace your adventurous spirits! Find a unique outdoor spot in your area – maybe a quirky piece of public art, an interesting tree, or a cool architectural detail – and take a selfie there with a creative pose that shows off its interesting feature. Explain why you chose this spot!",
+    "timeLimitSeconds": 43200
+  }
+]
+```
+[00:25:03.201] Server  LOG     ---------------------------
+[00:25:03.202] Server  LOG     --- Parsed JSON Text ---
+[00:25:03.204] Server  LOG     [
+  {
+    "type": "location",
+    "prompt": "Time for a mini-adventure! Find the highest accessible point in your neighborhood that isn't a building (a hill, a scenic overlook, etc.) and snap a photo looking out. Bonus points for a dramatic pose!",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "image",
+    "prompt": "Let's see your competitive side! Find a local park with a badminton court and stage a hilariously dramatic photo of you either winning or losing a match...against an imaginary opponent (or a friend who's willing to play along). Include a caption explaining the epic 'battle'.",
+    "timeLimitSeconds": 43200
+  },
+  {
+    "type": "text",
+    "prompt": "Since you both value honesty, let's try this: describe a time you learned a valuable lesson from a video game, sports moment, or outdoor activity that you can apply to real life. Be honest and share what you learned!",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "text",
+    "prompt": "Time to get creative! Write a short poem (limerick, haiku, anything goes!) about the joys of a chocolate croissant after a long hike or a challenging Valorant match. Make it as ridiculous or sincere as you want!",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "image",
+    "prompt": "Embrace your adventurous spirits! Find a unique outdoor spot in your area – maybe a quirky piece of public art, an interesting tree, or a cool architectural detail – and take a selfie there with a creative pose that shows off its interesting feature. Explain why you chose this spot!",
+    "timeLimitSeconds": 43200
+  }
+]
+[00:25:03.205] Server  LOG     ------------------------
+[00:25:04.317] Server  LOG     Quest created with 5 challenges.
+[00:25:04.717] Server  LOG     Generating quest for match 696bf7d178367124da9f44fb...
+[00:25:05.038] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:25:07.178] Server  LOG     --- Gemini Raw Response ---
+[00:25:07.180] Server  LOG     ```json
+[
+  {
+    "type": "image",
+    "prompt": "Let's combine hiking and Sci-Fi! Find a place on your next hike that looks like it could be the landscape of an alien planet. Take a photo and share it, and describe the imaginary alien life that might inhabit it.",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "text",
+    "prompt": "If you could write a book together, what genre would it be and what would the first line be? Bonus points for explaining why you chose that genre!",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "image",
+    "prompt": "Create a 'Coffee Shop Masterpiece' - using items you find in your kitchen and your best plating skills, design a treat that you would proudly serve alongside a coffee in a cafe. Take a picture and describe what ingredients you used and how it tastes (or how you *think* it would taste!).",
+    "timeLimitSeconds": 7200
+  },
+  {
+    "type": "location",
+    "prompt": "Visit a local library or bookstore. Find a book you think the other person would absolutely love and take a picture of it. In the description, tell them why you chose it and what makes it so special.",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "text",
+    "prompt": "Since you both value honesty, share a small, everyday act of kindness you've witnessed recently that restored your faith in humanity. Explain why it was so impactful to you.",
+    "timeLimitSeconds": 5400
+  }
+]
+```
+[00:25:07.182] Server  LOG     ---------------------------
+[00:25:07.183] Server  LOG     --- Parsed JSON Text ---
+[00:25:07.185] Server  LOG     [
+  {
+    "type": "image",
+    "prompt": "Let's combine hiking and Sci-Fi! Find a place on your next hike that looks like it could be the landscape of an alien planet. Take a photo and share it, and describe the imaginary alien life that might inhabit it.",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "text",
+    "prompt": "If you could write a book together, what genre would it be and what would the first line be? Bonus points for explaining why you chose that genre!",
+    "timeLimitSeconds": 3600
+  },
+  {
+    "type": "image",
+    "prompt": "Create a 'Coffee Shop Masterpiece' - using items you find in your kitchen and your best plating skills, design a treat that you would proudly serve alongside a coffee in a cafe. Take a picture and describe what ingredients you used and how it tastes (or how you *think* it would taste!).",
+    "timeLimitSeconds": 7200
+  },
+  {
+    "type": "location",
+    "prompt": "Visit a local library or bookstore. Find a book you think the other person would absolutely love and take a picture of it. In the description, tell them why you chose it and what makes it so special.",
+    "timeLimitSeconds": 86400
+  },
+  {
+    "type": "text",
+    "prompt": "Since you both value honesty, share a small, everyday act of kindness you've witnessed recently that restored your faith in humanity. Explain why it was so impactful to you.",
+    "timeLimitSeconds": 5400
+  }
+]
+[00:25:07.186] Server  LOG     ------------------------
+[00:25:08.273] Server  LOG     Quest created with 5 challenges.
+[00:25:17.656] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:25:21.108] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:25:23.860] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:25:42.336] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:25:44.671] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:26:03.902] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:27:09.425] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:30:43.062] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:31:04.586] Server  LOG     ✓ Compiled in 193ms
+[00:31:17.972] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold

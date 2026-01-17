@@ -191,7 +191,6 @@ const UserSchema = new __TURBOPACK__imported__module__$5b$externals$5d2f$mongoos
         type: String,
         enum: [
             'onboarding',
-            'idle',
             'waiting_for_match',
             'matched'
         ],

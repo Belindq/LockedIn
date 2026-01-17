@@ -1,1 +1,9 @@
 node_modules
+.next/
+.env*.local
+.env
+bruno-tests/
+test-db-connection.js
+test-seed.js
+dist/
+build/

@@ -116,11 +116,25 @@ export async function runMatchingAlgorithm() {
                             orderIndex: i,
                             type: challengeData.type,
                             prompt: challengeData.prompt,
-                            timeLimitSeconds: challengeData.timeLimitSeconds
+                            timeLimitSeconds: challengeData.timeLimitSeconds,
+                            depthLevel: i + 1  // Progressive depth: 1 (surface) to 5 (deep)
                         });
 
-                        await ChallengeProgress.create({ challengeId: challenge._id, userId: validA._id, status: 'pending' });
-                        await ChallengeProgress.create({ challengeId: challenge._id, userId: validB._id, status: 'pending' });
+                        // Only first challenge is active, rest are locked
+                        const initialStatus = i === 0 ? 'active' : 'locked';
+
+                        await ChallengeProgress.create({
+                            challengeId: challenge._id,
+                            questId: quest._id,
+                            userId: validA._id,
+                            status: initialStatus
+                        });
+                        await ChallengeProgress.create({
+                            challengeId: challenge._id,
+                            questId: quest._id,
+                            userId: validB._id,
+                            status: initialStatus
+                        });
                     }
                     console.log(`Quest created with ${generatedChallenges.length} challenges.`);
 

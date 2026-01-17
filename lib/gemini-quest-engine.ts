@@ -44,33 +44,46 @@ export async function generateQuestChallenges(
 
     const prompt = `You are a creative dating app quest designer. Generate exactly 5 unique, fun, and family-friendly challenges for two people to complete together.
 
-User A interests: ${userAProfile.interests}
-User A values: ${userAProfile.values}
+CRITICAL: Create challenges with PROGRESSIVE DEPTH - start light and get progressively more personal:
 
-User B interests: ${userBProfile.interests}
-User B values: ${userBProfile.values}
+**Depth Guidelines:**
+- Challenge 1 (Surface): Fun, lighthearted ice-breaker (favorite things, hobbies, daily habits)
+- Challenge 2 (Interests): Explore their stated interests and activities more specifically
+- Challenge 3 (Values in Action): How do their values show up in real life? What matters to them?
+- Challenge 4 (Personal Stories): Formative experiences, vulnerabilities, meaningful moments
+- Challenge 5 (Deep Connection): Life philosophy, authentic self, what drives them, emotional truth
 
-Here are some example templates for inspiration:
-${QUEST_TEMPLATES.join('\n')}
+User A Profile:
+- Interests: ${userAProfile.interests}
+- Values: ${userAProfile.values}
+- Must-haves: ${userAProfile.mustHaves}
+- Nice-to-haves: ${userAProfile.niceToHaves}
 
-IMPORTANT RULES:
-1. Generate exactly 5 challenges
-2. Personalize based on shared interests (e.g., if both like gaming, include gaming-related challenges; if both value volunteering, include a challenge to make a positive change today)
-3. Mix of types: at least 2 text-based, at least 2 image-based, and 1 location-based
-4. Keep them playful, revealing, and connection-building
-5. Must be family-friendly and appropriate
-6. Each challenge should take 10-30 minutes to complete
-7. Avoid any dangerous activities
+User B Profile:
+- Interests: ${userBProfile.interests}
+- Values: ${userBProfile.values}
+- Must-haves: ${userBProfile.mustHaves}
+- Nice-to-haves: ${userBProfile.niceToHaves}
 
-Return ONLY a valid JSON array in this exact format:
+**Requirements:**
+1. Make each challenge build on the previous ones naturally
+2. Use their actual interests/values to personalize each level
+3. Keep it conversational and engaging, not like an interview
+4. NO FACES in photos! Creativity over selfies
+5. Each should feel progressively more intimate
+
+Types: "text", "image", or "location"
+
+Return ONLY a JSON array of 5 objects with this structure:
 [
   {
-    "type": "text",
-    "prompt": "Your challenge prompt here",
-    "timeLimitSeconds": 3600
-  },
-  ...
+    "type": "text" | "image" | "location",
+    "prompt": "The challenge question/task",
+    "timeLimitSeconds": 172800
+  }
 ]
+
+Make it natural, progressive, and get them connecting on deeper levels!
 
 Types must be: "text", "image", or "location"
 Time limits should be between 1800 (30 min) and 86400 (24 hours) seconds.`;
@@ -319,3 +332,6 @@ Return ONLY a valid JSON object:
         };
     }
 }
+
+ 
+ 

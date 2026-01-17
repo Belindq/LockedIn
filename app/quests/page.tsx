@@ -156,150 +156,161 @@ export default function QuestsPage() {
     const partnerProgress = activeQuest.quest.userBProgress || 0;
     const combinedProgress = Math.round((userProgress + partnerProgress) / 2);
 
+    // Get partner name from match data
+    const partnerName = activeQuest.partnerName || "Partner";
+
     // Active Quest View
     return (
         <div className="h-full bg-background flex flex-col">
             {/* Main scrollable quest area */}
             <div className="flex-1 overflow-y-auto pb-32">
                 <div className="w-full px-4 py-8">
+                    {/* Partner Name Header */}
+                    <div className="text-center mb-6">
+                        <h2 className="text-[12px] font-pixel text-secondary mb-1">QUESTING WITH</h2>
+                        <h1 className="text-[18px] font-pixel text-primary uppercase">{partnerName}</h1>
+                    </div>
+
                     {/* Quest messages in chat style */}
                     <div className="space-y-6">
-                        {activeQuest.challenges.map((challenge: any, idx: number) => {
-                            const isLocked = challenge.myStatus.status === 'locked';
-                            const isActive = challenge.myStatus.status === 'active';
-                            const isSubmitted = challenge.myStatus.status === 'submitted';
-                            const isCompleted = challenge.myStatus.status === 'completed' || challenge.myStatus.status === 'approved';
-                            const partnerNeedsApproval = challenge.partnerStatus.status === 'submitted';
+                        {activeQuest.challenges
+                            .filter((challenge: any) => challenge.myStatus.status !== 'locked') // Hide locked challenges
+                            .map((challenge: any, idx: number) => {
+                                const isLocked = challenge.myStatus.status === 'locked';
+                                const isActive = challenge.myStatus.status === 'active';
+                                const isSubmitted = challenge.myStatus.status === 'submitted';
+                                const isCompleted = challenge.myStatus.status === 'completed' || challenge.myStatus.status === 'approved';
+                                const partnerNeedsApproval = challenge.partnerStatus.status === 'submitted';
 
-                            return (
-                                <div key={challenge.id} className="flex gap-4 items-start">
-                                    {/* Pixel heart icon placeholder */}
-                                    <div className="flex-shrink-0 w-8 h-8 bg-secondary border-2 border-white flex items-center justify-center text-white text-lg">
-                                        ♥
-                                    </div>
-
-                                    {/* Challenge card */}
-                                    <div className={`flex-1 bg-card text-card-text border-2 p-4 transition-all ${isActive ? 'border-primary shadow-lg' : 'border-border'
-                                        }`}>
-                                        <div className="flex justify-between items-start mb-2">
-                                            <div className="flex-1">
-                                                <h3 className="font-bold text-[10px] mb-1 font-pixel uppercase tracking-wider text-primary">
-                                                    {isLocked ? "LOCKED" : "QUEST"}
-                                                </h3>
-                                                <p className="text-[10px] text-card-text font-medium">
-                                                    {isLocked ? "???" : challenge.prompt}
-                                                </p>
-                                                <p className="text-[8px] text-gray-500 mt-1">
-                                                    {isLocked ? "Complete previous quest to unlock" : `Type: ${challenge.type}`}
-                                                </p>
-                                            </div>
-                                            <span className={`text-[8px] px-2 py-1 border font-pixel ${isCompleted ? "bg-green-100 border-green-500 text-green-700" :
-                                                isActive ? "bg-blue-100 border-blue-500 text-blue-700" :
-                                                    isLocked ? "bg-gray-100 border-gray-500 text-gray-700" :
-                                                        "bg-yellow-100 border-yellow-500 text-yellow-700"
-                                                }`}>
-                                                {challenge.myStatus.status.toUpperCase()}
-                                            </span>
+                                return (
+                                    <div key={challenge.id} className="flex gap-4 items-start">
+                                        {/* Pixel heart icon placeholder */}
+                                        <div className="flex-shrink-0 w-8 h-8 bg-secondary border-2 border-white flex items-center justify-center text-white text-lg">
+                                            ♥
                                         </div>
 
-                                        {/* Submission area for active challenges */}
-                                        {isActive && !isLocked && (
-                                            <div className="mt-3 pt-3 border-t-2 border-border">
-                                                {(challenge.type === 'image' || challenge.type === 'location') && (
-                                                    <div>
-                                                        <div className="text-[7px] text-gray-500 mb-2">
-                                                            📷 Photo upload (No faces!)
-                                                        </div>
-                                                        <input
-                                                            type="file"
-                                                            accept="image/*"
-                                                            className="text-[8px] w-full mb-2"
-                                                            onChange={(e) => {
-                                                                const file = e.target.files?.[0];
-                                                                if (file) {
-                                                                    const reader = new FileReader();
-                                                                    reader.onloadend = () => setSubmissionImage(reader.result as string);
-                                                                    reader.readAsDataURL(file);
-                                                                }
-                                                            }}
-                                                        />
-                                                    </div>
-                                                )}
-                                                {challenge.type === 'location' && (
-                                                    <button
-                                                        onClick={() => setSubmissionLocation({ lat: 40.7128, lng: -74.0060 })}
-                                                        className="mb-2 text-[7px] bg-blue-100 text-blue-700 px-2 py-1 border border-blue-300 hover:bg-blue-200"
-                                                    >
-                                                        📍 Use Mock Location
-                                                    </button>
-                                                )}
-                                                <textarea
-                                                    placeholder="Type your response..."
-                                                    rows={2}
-                                                    value={submissionText}
-                                                    onChange={e => setSubmissionText(e.target.value)}
-                                                    className="w-full mb-2 p-2 text-[8px] bg-input-bg text-input-text border-2 border-border placeholder:text-gray-400"
-                                                />
-                                                <Button
-                                                    variant="primary"
-                                                    className="w-full text-[8px]"
-                                                    onClick={() => submitChallenge(challenge.id)}
-                                                >
-                                                    SUBMIT
-                                                </Button>
-                                            </div>
-                                        )}
-
-                                        {/* Waiting for approval */}
-                                        {isSubmitted && (
-                                            <div className="mt-3 pt-3 border-t-2 border-border">
-                                                <div className="text-[8px] text-yellow-700 bg-yellow-50 p-2 border border-yellow-300">
-                                                    ⏳ Waiting for partner approval...
+                                        {/* Challenge card */}
+                                        <div className={`flex-1 bg-card text-card-text border-2 p-4 transition-all ${isActive ? 'border-primary shadow-lg' : 'border-border'
+                                            }`}>
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div className="flex-1">
+                                                    <h3 className="font-bold text-[10px] mb-1 font-pixel uppercase tracking-wider text-primary">
+                                                        {isLocked ? "LOCKED" : "QUEST"}
+                                                    </h3>
+                                                    <p className="text-[10px] text-card-text font-medium">
+                                                        {isLocked ? "???" : challenge.prompt}
+                                                    </p>
+                                                    <p className="text-[8px] text-gray-500 mt-1">
+                                                        {isLocked ? "Complete previous quest to unlock" : `Type: ${challenge.type}`}
+                                                    </p>
                                                 </div>
+                                                <span className={`text-[8px] px-2 py-1 border font-pixel ${isCompleted ? "bg-green-100 border-green-500 text-green-700" :
+                                                    isActive ? "bg-blue-100 border-blue-500 text-blue-700" :
+                                                        isLocked ? "bg-gray-100 border-gray-500 text-gray-700" :
+                                                            "bg-yellow-100 border-yellow-500 text-yellow-700"
+                                                    }`}>
+                                                    {challenge.myStatus.status.toUpperCase()}
+                                                </span>
                                             </div>
-                                        )}
 
-                                        {/* Partner needs approval */}
-                                        {partnerNeedsApproval && (
-                                            <div className="mt-3 pt-3 border-t-2 border-border">
-                                                <div className="bg-orange-50 border border-orange-300 p-3">
-                                                    <div className="font-bold text-[8px] text-orange-900 mb-2">Partner needs approval!</div>
-                                                    {challenge.partnerStatus.submissionImageBase64 && (
-                                                        <img src={challenge.partnerStatus.submissionImageBase64} alt="Partner Submission" className="h-24 mb-2 border-2 border-border" />
-                                                    )}
-                                                    {challenge.partnerStatus.submissionText && (
-                                                        <div className="text-[8px] italic mb-2 bg-white p-2 border border-orange-200">
-                                                            "{challenge.partnerStatus.submissionText}"
+                                            {/* Submission area for active challenges */}
+                                            {isActive && !isLocked && (
+                                                <div className="mt-3 pt-3 border-t-2 border-border">
+                                                    {(challenge.type === 'image' || challenge.type === 'location') && (
+                                                        <div>
+                                                            <div className="text-[7px] text-gray-500 mb-2">
+                                                                📷 Photo upload (No faces!)
+                                                            </div>
+                                                            <input
+                                                                type="file"
+                                                                accept="image/*"
+                                                                className="text-[8px] w-full mb-2"
+                                                                onChange={(e) => {
+                                                                    const file = e.target.files?.[0];
+                                                                    if (file) {
+                                                                        const reader = new FileReader();
+                                                                        reader.onloadend = () => setSubmissionImage(reader.result as string);
+                                                                        reader.readAsDataURL(file);
+                                                                    }
+                                                                }}
+                                                            />
                                                         </div>
                                                     )}
-                                                    <div className="flex gap-2">
-                                                        <Button
-                                                            variant="primary"
-                                                            className="flex-1 text-[8px]"
-                                                            onClick={() => approveChallenge(challenge.id)}
+                                                    {challenge.type === 'location' && (
+                                                        <button
+                                                            onClick={() => setSubmissionLocation({ lat: 40.7128, lng: -74.0060 })}
+                                                            className="mb-2 text-[7px] bg-blue-100 text-blue-700 px-2 py-1 border border-blue-300 hover:bg-blue-200"
                                                         >
-                                                            APPROVE
-                                                        </Button>
-                                                        <button className="flex-1 text-[8px] px-2 py-1 bg-red-100 border-2 border-red-500 text-red-700 font-pixel opacity-50 cursor-not-allowed">
-                                                            REJECT
+                                                            📍 Use Mock Location
                                                         </button>
+                                                    )}
+                                                    <textarea
+                                                        placeholder="Type your response..."
+                                                        rows={2}
+                                                        value={submissionText}
+                                                        onChange={e => setSubmissionText(e.target.value)}
+                                                        className="w-full mb-2 p-2 text-[8px] bg-input-bg text-input-text border-2 border-border placeholder:text-gray-400"
+                                                    />
+                                                    <Button
+                                                        variant="primary"
+                                                        className="w-full text-[8px]"
+                                                        onClick={() => submitChallenge(challenge.id)}
+                                                    >
+                                                        SUBMIT
+                                                    </Button>
+                                                </div>
+                                            )}
+
+                                            {/* Waiting for approval */}
+                                            {isSubmitted && (
+                                                <div className="mt-3 pt-3 border-t-2 border-border">
+                                                    <div className="text-[8px] text-yellow-700 bg-yellow-50 p-2 border border-yellow-300">
+                                                        ⏳ Waiting for partner approval...
                                                     </div>
                                                 </div>
-                                            </div>
-                                        )}
+                                            )}
 
-                                        {/* Show submissions if completed */}
-                                        {isCompleted && (
-                                            <div className="mt-3 pt-3 border-t-2 border-border space-y-2">
-                                                <div className="text-[7px] text-green-700 bg-green-50 p-2 border border-green-300">
-                                                    ✅ Challenge Completed!
+                                            {/* Partner needs approval */}
+                                            {partnerNeedsApproval && (
+                                                <div className="mt-3 pt-3 border-t-2 border-border">
+                                                    <div className="bg-orange-50 border border-orange-300 p-3">
+                                                        <div className="font-bold text-[8px] text-orange-900 mb-2">Partner needs approval!</div>
+                                                        {challenge.partnerStatus.submissionImageBase64 && (
+                                                            <img src={challenge.partnerStatus.submissionImageBase64} alt="Partner Submission" className="h-24 mb-2 border-2 border-border" />
+                                                        )}
+                                                        {challenge.partnerStatus.submissionText && (
+                                                            <div className="text-[8px] italic mb-2 bg-white p-2 border border-orange-200">
+                                                                "{challenge.partnerStatus.submissionText}"
+                                                            </div>
+                                                        )}
+                                                        <div className="flex gap-2">
+                                                            <Button
+                                                                variant="primary"
+                                                                className="flex-1 text-[8px]"
+                                                                onClick={() => approveChallenge(challenge.id)}
+                                                            >
+                                                                APPROVE
+                                                            </Button>
+                                                            <button className="flex-1 text-[8px] px-2 py-1 bg-red-100 border-2 border-red-500 text-red-700 font-pixel opacity-50 cursor-not-allowed">
+                                                                REJECT
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )}
+                                            )}
+
+                                            {/* Show submissions if completed */}
+                                            {isCompleted && (
+                                                <div className="mt-3 pt-3 border-t-2 border-border space-y-2">
+                                                    <div className="text-[7px] text-green-700 bg-green-50 p-2 border border-green-300">
+                                                        ✅ Challenge Completed!
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        })}
+                                );
+                            })}
 
                         {/* Reveal Button */}
                         {(activeQuest.quest.status === 'completed' ||
@@ -416,10 +427,15 @@ export default function QuestsPage() {
                     <div className="flex justify-center">
                         <Button
                             variant="destructive"
-                            onClick={() => router.push('/dashboard')}
+                            onClick={() => {
+                                if (confirm('Are you sure you want to unmatch? This will end your quest.')) {
+                                    // TODO: Call unmatch API
+                                    router.push('/dashboard');
+                                }
+                            }}
                             className="text-[10px] bg-background border-2 border-border !text-black dark:!text-white font-bold hover:bg-red-500 hover:!text-white hover:border-red-500 text-xs px-8 py-2 font-pixel"
                         >
-                            EXIT QUEST
+                            UNMATCH
                         </Button>
                     </div>
                 </div>

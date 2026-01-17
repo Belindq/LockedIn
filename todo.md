@@ -159,15 +159,15 @@ Users may re-enter matching afterward.
 ## Phase 2: AI Integration (Completed)
 - [x] Implement Gemini-based quest generation and face detection logic.
 
-## Phase 3: API Endpoints (In Progress)
+## Phase 3: API Endpoints (Completed)
 - [x] POST /api/quest/create (Initialization)
 - [x] POST /api/challenges/submit (Submission + AI Face Check)
 - [x] POST /api/challenges/approve (Partner verification)
-- [ ] GET /api/quest/active (State retrieval + Expiration check)
-- [ ] GET /api/challenges/progress (Side-by-side progress view)
-- [ ] POST /api/quest/nudge (Interaction without chat)
-- [ ] POST /api/quest/cancel (Disposal)
-- [ ] GET /api/quest/reveal (Final date reveal)
+- [x] GET /api/quest/active (State retrieval + Expiration check)
+- [x] GET /api/challenges/progress (Side-by-side progress view)
+- [x] POST /api/quest/nudge (Interaction without chat)
+- [x] POST /api/quest/cancel (Disposal)
+- [x] GET /api/quest/reveal (Final date reveal)
 
 ## Phase 4: Validation & Logic
 - [x] On-read expiration logic.

@@ -36,8 +36,20 @@ async function sendMatchEmail(to: string, name: string, matchName: string) {
             await resend.emails.send({
                 from: 'LockedIn <onboarding@resend.dev>',
                 to: [to],
-                subject: 'You have a Match!',
-                html: `<p>Hi ${name},</p><p>You have been matched with <strong>${matchName}</strong>!</p><p>Go to the app to see next steps.</p>`
+                subject: '🔒 You\'ve Been Matched on LockedIn! 💘',
+                html: `
+                    <p>Hey there!</p>
+                    <p>Well, well, well... look who just got matched! 👀</p>
+                    <p>The universe (and our very sophisticated AI algorithms) have spoken, and guess what? You're now officially matched with <strong>${matchName}</strong>! 💖</p>
+                    <p>And here's the thing... you can't swipe left now. 😏</p>
+                    <p>The door is locked. The key has been thrown into the digital abyss. Your fate is sealed. (In the most romantic way possible, of course.)</p>
+                    <p>This is your moment! Time to work hard, play harder, and see if sparks fly. 🎆</p>
+                    <p>So what happens next? Head to the app to start your journey. No ghosting allowed. No backing out. Just pure, committed, slightly chaotic romance waiting to unfold.</p>
+                    <p>👉 <a href="https://cant-swipe-left-now.tech">Click here to unlock your match</a></p>
+                    <p>P.S. — Your match is just as stuck with you as you are with them. Isn't commitment beautiful? 💐</p>
+                    <br/>
+                    <p><strong>LockedIn — Where commitment meets comedy</strong></p>
+                `
             });
         } catch (e) {
             console.error(`[EMAIL FAIL] Failed to send to ${to}`, e);

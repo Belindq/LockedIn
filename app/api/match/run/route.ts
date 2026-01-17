@@ -36,7 +36,7 @@ async function sendMatchEmail(to: string, name: string, matchName: string) {
             await resend.emails.send({
                 from: 'LockedIn <onboarding@resend.dev>',
                 to: [to],
-                subject: 'You have a Match! 🔒',
+                subject: 'You have a Match!',
                 html: `<p>Hi ${name},</p><p>You have been matched with <strong>${matchName}</strong>!</p><p>Go to the app to see next steps.</p>`
             });
         } catch (e) {

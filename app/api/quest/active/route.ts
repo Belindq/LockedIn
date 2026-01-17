@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Quest from '@/models/Quest';
@@ -60,7 +61,7 @@ export async function GET(request: NextRequest) {
         const userBProgress = await calculateUserProgress(quest._id, quest.userBId);
 
         // Get current challenge for requesting user
-        const currentChallengeData = await getCurrentChallenge(quest._id, userId);
+        const currentChallengeData = await getCurrentChallenge(quest._id, new mongoose.Types.ObjectId(userId));
 
         // Get partner's current challenge
         const partnerId = quest.userAId.toString() === userId ? quest.userBId : quest.userAId;

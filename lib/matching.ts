@@ -4,6 +4,7 @@ import Match from '@/models/Match';
 import Quest from '@/models/Quest';
 import Challenge from '@/models/Challenge';
 import ChallengeProgress from '@/models/ChallengeProgress';
+import MatchLog from '@/models/MatchLog';
 import { generateQuestChallenges } from '@/lib/gemini-quest-engine';
 import connectDB from '@/lib/db';
 
@@ -12,35 +13,54 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 export async function runMatchingAlgorithm() {
     await connectDB();
 
-    const pool = await User.find({ status: 'waiting_for_match' });
+    // Init Log
+    const matchLog = new MatchLog({
+        candidateCount: 0,
+        candidates: [],
+        matchesCreated: []
+    });
 
-    if (pool.length < 2) {
-        return { matchesRaw: [], count: 0, message: 'Not enough users in pool' };
-    }
+    try {
+        const pool = await User.find({ status: 'waiting_for_match' });
 
-    const candidates = pool.map(u => ({
-        id: u._id.toString(),
-        name: u.firstName,
-        age: u.age,
-        gender: u.gender,
-        sexuality: u.sexuality,
-        location: u.homeAddress,
-        interests: u.interests, // string
-        values: u.values,       // string
-        mustHaves: u.mustHaves, // string
-        dealBreakers: u.dealBreakers, // string
-    }));
+        console.log(`[MATCHING] Starting run. Pool size: ${pool.length}`);
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+        matchLog.candidateCount = pool.length;
 
-    const prompt = `
+        if (pool.length < 2) {
+            console.log('[MATCHING] Aborting: Not enough users in pool (Need 2+)');
+            matchLog.error = 'Not enough users in pool';
+            await matchLog.save();
+            return { matches: [], count: 0, message: 'Not enough users in pool', logId: matchLog._id };
+        }
+
+        const candidates = pool.map(u => ({
+            id: u._id.toString(),
+            name: u.firstName,
+            age: u.age,
+            gender: u.gender,
+            sexuality: u.sexuality,
+            location: u.homeAddress,
+            interests: u.interests,
+            values: u.values,
+            mustHaves: u.mustHaves,
+            dealBreakers: u.dealBreakers,
+        }));
+
+        matchLog.candidates = candidates;
+        console.log('[MATCHING] Candidates:', JSON.stringify(candidates, null, 2));
+
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+
+        const prompt = `
     You are a professional matchmaker. Match these users based on their data.
     
     Constraints:
     1. Users must be compatible based on gender/sexuality (Strict).
     2. Respect "Deal Breakers" absolutely.
-    3. Return matches as pairs of IDs.
-    4. Each user can only be in ONE pair.
+    3. Prioritize matches with similar ages.
+    4. Return matches as pairs of IDs.
+    5. Each user can only be in ONE pair.
     
     Input Users (JSON):
     ${JSON.stringify(candidates)}
@@ -53,14 +73,32 @@ export async function runMatchingAlgorithm() {
     Return ONLY valid JSON.
   `;
 
-    try {
+        matchLog.prompt = prompt;
+        await matchLog.save(); // Save progress
+
+        console.log('[MATCHING] Sending prompt to Gemini...');
         const result = await model.generateContent(prompt);
         const response = await result.response;
         let text = response.text();
 
+        console.log('[MATCHING] Raw AI Response:', text);
+        matchLog.aiResponse = text;
+
         text = text.replace(/```json/g, '').replace(/```/g, '').trim();
 
-        const pairs = JSON.parse(text);
+        let pairs = [];
+        try {
+            pairs = JSON.parse(text);
+        } catch (e) {
+            console.error('Failed to parse AI response', e);
+            matchLog.error = 'Failed to parse AI response JSON';
+            await matchLog.save();
+            return { matches: [], count: 0, error: 'AI Parse Error', logId: matchLog._id };
+        }
+
+        matchLog.parsedPairs = pairs;
+        console.log('[MATCHING] Parsed Pairs:', pairs);
+
         const createdMatches = [];
 
         for (const pair of pairs) {
@@ -165,10 +203,16 @@ export async function runMatchingAlgorithm() {
             }
         }
 
-        return { matches: createdMatches, count: createdMatches.length };
+        matchLog.matchesCreated = createdMatches;
+        await matchLog.save();
+
+        return { matches: createdMatches, count: createdMatches.length, logId: matchLog._id };
 
     } catch (error: any) {
         console.error('Gemini Matching Error Detailed:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+        matchLog.error = error.message || String(error);
+        await matchLog.save();
+
         if (error.response) {
             // Try/catch just in case accessing response.text() fails
             try {
@@ -181,3 +225,4 @@ export async function runMatchingAlgorithm() {
         throw error;
     }
 }
+

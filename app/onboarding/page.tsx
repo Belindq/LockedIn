@@ -94,7 +94,8 @@ export default function OnboardingPage() {
                     formData.lastName &&
                     formData.age &&
                     formData.gender &&
-                    formData.sexuality
+                    formData.sexuality &&
+                    parseInt(formData.age) >= 18
                 );
             case 3: // Location
                 return !!(formData.homeAddress);
@@ -162,7 +163,7 @@ export default function OnboardingPage() {
                 locationCoordinates: { lat: 0, lng: 0 }, // Mock coord for now
             });
             setUserStatus("waiting_for_match");
-            router.push('/quests');
+            router.push('/matches');
 
         } catch (err: any) {
             setError(err.message);
@@ -259,6 +260,9 @@ export default function OnboardingPage() {
                                             className="w-full bg-input-bg border-2 border-border text-input-text p-3 focus:outline-none focus:border-primary font-pixel text-[14px]"
                                             placeholder="18+"
                                         />
+                                        {formData.age && parseInt(formData.age) < 18 && (
+                                            <p className="text-red-500 text-[10px] mt-1 font-pixel">You must be 18+ to join.</p>
+                                        )}
                                     </div>
                                     <div>
                                         <label className="block text-[12px] font-pixel text-gray-500 mb-2 uppercase">Gender</label>

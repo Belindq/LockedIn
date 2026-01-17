@@ -31,7 +31,7 @@ export async function POST(req: Request) {
 }
 
 async function sendMatchEmail(to: string, name: string, matchName: string) {
-    if (process.env.RESEND_API_KEY && !process.env.RESEND_API_KEY.includes('PLACEHOLDER')) {
+    if (process.env.RESEND_API_KEY && !process.env.RESEND_API_KEY.includes('RESEND_API_KEY')) {
         try {
             await resend.emails.send({
                 from: 'LockedIn <onboarding@resend.dev>',

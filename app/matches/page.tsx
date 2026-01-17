@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Card } from '@/components/Card';
+import { Button } from '@/components/Button';
+import { EmptyState } from '@/components/EmptyState';
 
 interface MatchStatus {
     hasMatch: boolean;
@@ -43,62 +46,85 @@ export default function MatchesPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-            <div className="max-w-md w-full bg-white rounded-xl shadow-xl overflow-hidden text-center p-8">
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">Your Match Status</h1>
+        <div className="h-full bg-background flex flex-col items-center justify-center p-4">
+            <Card className="max-w-md w-full text-center p-8 bg-card border-4 border-border shadow-xl">
+                <h1 className="text-2xl font-bold mb-6 font-pixel text-primary uppercase tracking-widest">
+                    Match Status
+                </h1>
 
                 {status === 'loading' && (
-                    <div className="animate-pulse flex flex-col items-center">
-                        <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-                        <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                    <div className="flex flex-col items-center space-y-4">
+                        <div className="w-full h-4 bg-gray-200 animate-pulse rounded"></div>
+                        <div className="w-2/3 h-4 bg-gray-200 animate-pulse rounded"></div>
                     </div>
                 )}
 
                 {status === 'matched' && (
-                    <div className="bg-green-50 text-green-800 p-6 rounded-lg animate-fade-in-up">
-                        <div className="text-4xl mb-2">🎉</div>
-                        <h2 className="text-xl font-bold mb-2">You have a match!</h2>
-                        <p className="text-lg">You are locked in with <span className="font-bold text-indigo-600">{partnerName}</span>.</p>
-                        <button
-                            onClick={() => router.push('/dashboard')}
-                            className="mt-6 bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-indigo-700 transition"
+                    <div className="bg-green-50 border-2 border-green-500 p-6 rounded-lg animate-fade-in-up">
+                        <div className="text-4xl mb-4">🎉</div>
+                        <h2 className="text-xl font-bold mb-2 font-pixel text-green-800 uppercase">
+                            You're Locked In!
+                        </h2>
+                        <p className="text-sm font-pixel text-gray-700 mb-6">
+                            Matched with <span className="font-bold text-primary text-lg">{partnerName}</span>
+                        </p>
+                        <Button
+                            variant="primary"
+                            onClick={() => router.push('/quests')}
+                            className="w-full text-sm font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]"
                         >
-                            Start Chatting
-                        </button>
+                            START QUEST
+                        </Button>
                     </div>
                 )}
 
                 {status === 'waitlist' && (
-                    <div className="text-gray-600">
-                        <div className="text-4xl mb-4">⏳</div>
-                        <p className="mb-4">You are currently on the waitlist.</p>
-                        <p className="text-sm">We ran our matching algorithm every night at 8 PM.</p>
-                        <p className="text-sm mt-2">Make sure your profile is complete!</p>
+                    <div className="space-y-6">
+                        <div className="text-4xl animate-bounce">⏳</div>
+                        <div className="space-y-2">
+                            <p className="font-pixel text-lg text-card-text">
+                                You are on the waitlist.
+                            </p>
+                            <p className="text-xs font-pixel text-gray-500">
+                                Matching runs daily at 8 PM.
+                            </p>
+                            <p className="text-xs font-pixel text-primary">
+                                Ensure your profile is 100% complete!
+                            </p>
+                        </div>
                     </div>
                 )}
 
-                {error && <p className="text-red-500 mt-4 text-sm">{error}</p>}
+                {error && (
+                    <p className="text-red-500 mt-4 text-xs font-pixel border border-red-200 bg-red-50 p-2">
+                        {error}
+                    </p>
+                )}
 
-                {/* Debug Button for Hackathon Demo */}
-                <div className="mt-8 border-t pt-4">
-                    <p className="text-xs text-gray-400 mb-2">Debug Control (Hackathon Only)</p>
-                    <button
+                {/* Debug Control */}
+                <div className="mt-8 pt-6 border-t-2 border-border border-dashed">
+                    <p className="text-[10px] uppercase font-bold text-gray-400 mb-3 tracking-widest">
+                        Debug Zone
+                    </p>
+                    <Button
+                        variant="secondary"
                         onClick={async () => {
                             try {
                                 const res = await fetch('/api/match/run', { method: 'POST' });
                                 const data = await res.json();
-                                alert('Matching Run Complete: ' + JSON.stringify(data));
+                                alert('Matching Algorithm Run: ' + JSON.stringify(data));
                                 window.location.reload();
                             } catch (e) {
                                 alert('Matching Failed');
                             }
                         }}
-                        className="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded"
+                        className="text-[10px] py-2 px-4 w-full opacity-50 hover:opacity-100 transition-opacity"
                     >
-                        Force Run Matching Algorithm
-                    </button>
+                        ⚡ FORCE MATCH
+                    </Button>
                 </div>
-            </div>
+            </Card>
         </div>
     );
 }
+

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/lib/UserContext';
 import { Button } from '@/components/Button';
@@ -18,10 +18,18 @@ const STEPS = [
 
 export default function OnboardingPage() {
     const router = useRouter();
-    const { updateUser, setUserStatus } = useUser();
+    const { user, updateUser, setUserStatus } = useUser(); // Access user state
     const [currentStep, setCurrentStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
+    // Redirect if already onboarded
+    useEffect(() => {
+        if (user && user.status && user.status !== 'onboarding') {
+            router.replace('/quests'); // or /matches
+        }
+    }, [user, router]);
+
 
     // Consolidated Form State
     const [formData, setFormData] = useState({
@@ -39,9 +47,26 @@ export default function OnboardingPage() {
         avatar: 'avatar1'
     });
 
-    // Enum Options
-    const genderOptions = ['Male', 'Female', 'Non-binary', 'Other', 'Prefer not to say'];
-    const sexualityOptions = ['Heterosexual', 'Gay', 'Lesbian', 'Bisexual', 'Pansexual', 'Asexual', 'Other', 'Prefer not to say'];
+    // Enum Options - Matching Mongoose Schema (lowercase)
+    const genderOptions = [
+        { label: 'Male', value: 'male' },
+        { label: 'Female', value: 'female' },
+        { label: 'Non-binary', value: 'non-binary' },
+        { label: 'Other', value: 'other' },
+        { label: 'Prefer not to say', value: 'prefer_not_to_say' }
+    ];
+
+    const sexualityOptions = [
+        { label: 'Heterosexual', value: 'heterosexual' },
+        { label: 'Gay', value: 'gay' },
+        { label: 'Lesbian', value: 'lesbian' },
+        { label: 'Bisexual', value: 'bisexual' },
+        { label: 'Pansexual', value: 'pansexual' },
+        { label: 'Asexual', value: 'asexual' },
+        { label: 'Other', value: 'other' },
+        { label: 'Prefer not to say', value: 'prefer_not_to_say' }
+    ];
+
     const avatars = [
         { id: 'avatar1', label: 'Avatar 1', icon: '👤' },
         { id: 'avatar2', label: 'Avatar 2', icon: '👩' },
@@ -148,14 +173,14 @@ export default function OnboardingPage() {
 
     return (
         <div className="h-full bg-background flex flex-col">
-            <div className="flex-1 overflow-y-auto py-8 px-4">
+            <div className="flex-1 overflow-y-auto py-12 px-8 md:px-12">
                 <div className="max-w-2xl mx-auto">
                     {/* Header */}
-                    <div className="text-center mb-8">
-                        <h1 className="text-[20px] font-pixel text-primary mb-2 uppercase tracking-widest">
+                    <div className="text-center mb-12">
+                        <h1 className="text-[28px] font-pixel text-primary mb-4 uppercase tracking-widest">
                             Setup Profile
                         </h1>
-                        <p className="text-[12px] font-pixel text-gray-500">
+                        <p className="text-[14px] font-pixel text-gray-500">
                             Step {currentStep} of {STEPS.length}
                         </p>
                     </div>
@@ -164,7 +189,7 @@ export default function OnboardingPage() {
                     <Stepper steps={STEPS} currentStep={currentStep} />
 
                     {/* Form Content */}
-                    <Card className="mt-8 bg-card border-2 border-border mb-8 shadow-none">
+                    <Card className="mt-12 bg-card border-2 border-border mb-12 shadow-none p-8">
                         {error && (
                             <div className="bg-red-50 border-2 border-red-500 text-red-700 px-4 py-3 mb-4 font-pixel text-sm">
                                 {error}
@@ -173,11 +198,11 @@ export default function OnboardingPage() {
 
                         {/* Step 1: Avatar */}
                         {currentStep === 1 && (
-                            <div className="space-y-6">
-                                <h2 className="text-[14px] font-pixel text-card-text text-center uppercase">
+                            <div className="space-y-8">
+                                <h2 className="text-[18px] font-pixel text-card-text text-center uppercase">
                                     Choose Your Avatar
                                 </h2>
-                                <div className="grid grid-cols-3 gap-4 place-items-center">
+                                <div className="grid grid-cols-3 gap-6 place-items-center">
                                     {avatars.map((av) => (
                                         <button
                                             key={av.id}
@@ -192,7 +217,7 @@ export default function OnboardingPage() {
                                         </button>
                                     ))}
                                 </div>
-                                <p className="text-center text-[10px] text-gray-400 font-pixel">
+                                <p className="text-center text-[12px] text-gray-400 font-pixel">
                                     Select an icon that represents you
                                 </p>
                             </div>
@@ -200,61 +225,61 @@ export default function OnboardingPage() {
 
                         {/* Step 2: Basics */}
                         {currentStep === 2 && (
-                            <div className="space-y-4">
-                                <h2 className="text-[14px] font-pixel text-card-text mb-4 uppercase border-b-2 border-border pb-2">
+                            <div className="space-y-6">
+                                <h2 className="text-[18px] font-pixel text-card-text mb-6 uppercase border-b-2 border-border pb-3">
                                     Basic Info
                                 </h2>
-                                <div className="grid grid-cols-1 gap-4">
+                                <div className="grid grid-cols-1 gap-6">
                                     <div>
-                                        <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">First Name</label>
+                                        <label className="block text-[12px] font-pixel text-gray-500 mb-2 uppercase">First Name</label>
                                         <input
                                             type="text"
                                             value={formData.firstName}
                                             onChange={(e) => updateField("firstName", e.target.value)}
-                                            className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px]"
+                                            className="w-full bg-input-bg border-2 border-border text-input-text p-3 focus:outline-none focus:border-primary font-pixel text-[14px]"
                                             placeholder="Your First Name"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Last Name</label>
+                                        <label className="block text-[12px] font-pixel text-gray-500 mb-2 uppercase">Last Name</label>
                                         <input
                                             type="text"
                                             value={formData.lastName}
                                             onChange={(e) => updateField("lastName", e.target.value)}
-                                            className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px]"
+                                            className="w-full bg-input-bg border-2 border-border text-input-text p-3 focus:outline-none focus:border-primary font-pixel text-[14px]"
                                             placeholder="Your Last Name"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Age</label>
+                                        <label className="block text-[12px] font-pixel text-gray-500 mb-2 uppercase">Age</label>
                                         <input
                                             type="number"
                                             value={formData.age}
                                             onChange={(e) => updateField("age", e.target.value)}
-                                            className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px]"
+                                            className="w-full bg-input-bg border-2 border-border text-input-text p-3 focus:outline-none focus:border-primary font-pixel text-[14px]"
                                             placeholder="18+"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Gender</label>
+                                        <label className="block text-[12px] font-pixel text-gray-500 mb-2 uppercase">Gender</label>
                                         <select
                                             value={formData.gender}
                                             onChange={(e) => updateField("gender", e.target.value)}
-                                            className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px]"
+                                            className="w-full bg-input-bg border-2 border-border text-input-text p-3 focus:outline-none focus:border-primary font-pixel text-[14px]"
                                         >
                                             <option value="">Select...</option>
-                                            {genderOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                            {genderOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Sexuality</label>
+                                        <label className="block text-[12px] font-pixel text-gray-500 mb-2 uppercase">Sexuality</label>
                                         <select
                                             value={formData.sexuality}
                                             onChange={(e) => updateField("sexuality", e.target.value)}
-                                            className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px]"
+                                            className="w-full bg-input-bg border-2 border-border text-input-text p-3 focus:outline-none focus:border-primary font-pixel text-[14px]"
                                         >
                                             <option value="">Select...</option>
-                                            {sexualityOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                            {sexualityOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                                         </select>
                                     </div>
                                 </div>
@@ -263,20 +288,20 @@ export default function OnboardingPage() {
 
                         {/* Step 3: Location */}
                         {currentStep === 3 && (
-                            <div className="space-y-4">
-                                <h2 className="text-[14px] font-pixel text-card-text mb-4 uppercase border-b-2 border-border pb-2">
+                            <div className="space-y-6">
+                                <h2 className="text-[18px] font-pixel text-card-text mb-6 uppercase border-b-2 border-border pb-3">
                                     Location
                                 </h2>
                                 <div>
-                                    <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Home Address</label>
+                                    <label className="block text-[12px] font-pixel text-gray-500 mb-2 uppercase">Home Address</label>
                                     <input
                                         type="text"
                                         value={formData.homeAddress}
                                         onChange={(e) => updateField("homeAddress", e.target.value)}
                                         placeholder="123 Main St, City, State"
-                                        className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px]"
+                                        className="w-full bg-input-bg border-2 border-border text-input-text p-3 focus:outline-none focus:border-primary font-pixel text-[14px]"
                                     />
-                                    <p className="mt-2 text-[10px] font-pixel text-gray-400">
+                                    <p className="mt-2 text-[12px] font-pixel text-gray-400">
                                         We use this to find quest locations near you.
                                     </p>
                                 </div>
@@ -285,28 +310,28 @@ export default function OnboardingPage() {
 
                         {/* Step 4: Identity */}
                         {currentStep === 4 && (
-                            <div className="space-y-4">
-                                <h2 className="text-[14px] font-pixel text-card-text mb-4 uppercase border-b-2 border-border pb-2">
+                            <div className="space-y-6">
+                                <h2 className="text-[18px] font-pixel text-card-text mb-6 uppercase border-b-2 border-border pb-3">
                                     Identity
                                 </h2>
                                 <div>
-                                    <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Interests</label>
+                                    <label className="block text-[12px] font-pixel text-gray-500 mb-2 uppercase">Interests</label>
                                     <textarea
                                         value={formData.interests}
                                         onChange={(e) => updateField("interests", e.target.value)}
                                         placeholder="Hiking, Coding, Sci-Fi..."
                                         rows={4}
-                                        className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px] resize-none"
+                                        className="w-full bg-input-bg border-2 border-border text-input-text p-3 focus:outline-none focus:border-primary font-pixel text-[14px] resize-none"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Values</label>
+                                    <label className="block text-[12px] font-pixel text-gray-500 mb-2 uppercase">Values</label>
                                     <textarea
                                         value={formData.values}
                                         onChange={(e) => updateField("values", e.target.value)}
                                         placeholder="Authenticity, Curiosity, Kindness..."
                                         rows={4}
-                                        className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px] resize-none"
+                                        className="w-full bg-input-bg border-2 border-border text-input-text p-3 focus:outline-none focus:border-primary font-pixel text-[14px] resize-none"
                                     />
                                 </div>
                             </div>
@@ -314,45 +339,45 @@ export default function OnboardingPage() {
 
                         {/* Step 5: Preferences */}
                         {currentStep === 5 && (
-                            <div className="space-y-4">
-                                <h2 className="text-[14px] font-pixel text-card-text mb-4 uppercase border-b-2 border-border pb-2">
+                            <div className="space-y-6">
+                                <h2 className="text-[18px] font-pixel text-card-text mb-6 uppercase border-b-2 border-border pb-3">
                                     Preferences
                                 </h2>
                                 <div>
-                                    <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Must-Haves</label>
+                                    <label className="block text-[12px] font-pixel text-gray-500 mb-2 uppercase">Must-Haves</label>
                                     <textarea
                                         value={formData.mustHaves}
                                         onChange={(e) => updateField("mustHaves", e.target.value)}
                                         placeholder="Good communication, shared humor..."
                                         rows={3}
-                                        className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px] resize-none"
+                                        className="w-full bg-input-bg border-2 border-border text-input-text p-3 focus:outline-none focus:border-primary font-pixel text-[14px] resize-none"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Nice-to-Haves</label>
+                                    <label className="block text-[12px] font-pixel text-gray-500 mb-2 uppercase">Nice-to-Haves</label>
                                     <textarea
                                         value={formData.niceToHaves}
                                         onChange={(e) => updateField("niceToHaves", e.target.value)}
                                         placeholder="Tall, likes sushi..."
                                         rows={3}
-                                        className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px] resize-none"
+                                        className="w-full bg-input-bg border-2 border-border text-input-text p-3 focus:outline-none focus:border-primary font-pixel text-[14px] resize-none"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Deal-Breakers</label>
+                                    <label className="block text-[12px] font-pixel text-gray-500 mb-2 uppercase">Deal-Breakers</label>
                                     <textarea
                                         value={formData.dealBreakers}
                                         onChange={(e) => updateField("dealBreakers", e.target.value)}
                                         placeholder="Smoking, rudeness..."
                                         rows={3}
-                                        className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px] resize-none"
+                                        className="w-full bg-input-bg border-2 border-border text-input-text p-3 focus:outline-none focus:border-primary font-pixel text-[14px] resize-none"
                                     />
                                 </div>
                             </div>
                         )}
 
                         {/* Navigation Buttons */}
-                        <div className="flex justify-between mt-8 pt-6 border-t-2 border-border">
+                        <div className="flex justify-between mt-10 pt-6 border-t-2 border-border">
                             <Button
                                 variant="ghost"
                                 onClick={handleBack}

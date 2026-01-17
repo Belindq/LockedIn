@@ -60,12 +60,11 @@ export default function MatchesPage() {
                 )}
 
                 {status === 'matched' && (
-                    <div className="bg-green-50 border-2 border-green-500 p-6 rounded-lg animate-fade-in-up">
-                        <div className="text-4xl mb-4">🎉</div>
-                        <h2 className="text-xl font-bold mb-2 font-pixel text-green-800 uppercase">
+                    <div className="bg-primary/5 border-2 border-primary/20 p-6 animate-fade-in-up">
+                        <h2 className="text-xl font-bold mb-2 font-pixel text-secondary uppercase">
                             You're Locked In!
                         </h2>
-                        <p className="text-sm font-pixel text-gray-700 mb-6">
+                        <p className="text-sm font-pixel text-card-text mb-6">
                             Matched with <span className="font-bold text-primary text-lg">{partnerName}</span>
                         </p>
                         <Button

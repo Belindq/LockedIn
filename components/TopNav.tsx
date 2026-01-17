@@ -23,7 +23,7 @@ export function TopNav() {
                     {/* Logo - Top Left */}
                     <div className="absolute left-0 top-[35%] transform -translate-y-1/2">
                         <Link href="/quests">
-                            <img src="/logo.png" alt="LockedIn Logo" className="h-40 object-contain hover:opacity-80 transition-opacity" />
+                            <img src="/logo.png" alt="LockedIn Logo" className="h-40 object-contain hover:opacity-80 transition-opacity image-pixelated" />
                         </Link>
                     </div>
 

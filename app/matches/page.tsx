@@ -59,11 +59,8 @@ export default function MatchesPage() {
                         <div className="text-4xl mb-2">🎉</div>
                         <h2 className="text-xl font-bold mb-2">You have a match!</h2>
                         <p className="text-lg">You are locked in with <span className="font-bold text-indigo-600">{partnerName}</span>.</p>
-                        <button
-                            onClick={() => router.push('/dashboard')}
-                            className="mt-6 bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-indigo-700 transition"
-                        >
-                            Go to Quest
+                        <button className="mt-6 bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-indigo-700 transition">
+                            Start Chatting
                         </button>
                     </div>
                 )}

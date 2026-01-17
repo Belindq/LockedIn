@@ -18,7 +18,12 @@ export async function POST(request: NextRequest) {
 
         // TODO: Get userId from session/auth
         const body = await request.json();
-        const { challengeId, userId, submissionText, submissionImageBase64, submissionLocation } = body;
+        let { challengeId, userId, submissionText, submissionImageBase64, submissionLocation } = body;
+
+        const headerUserId = request.headers.get('x-user-id');
+        if (headerUserId) {
+            userId = headerUserId;
+        }
 
         if (!challengeId || !userId) {
             return NextResponse.json(

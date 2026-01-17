@@ -1,26 +1,149 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card-bg: var(--card-bg);
+  --color-card-text: var(--card-text);
+  --color-border: var(--border);
+  --color-input-bg: var(--input-bg);
+  --color-input-text: var(--input-text);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --font-pixel: 'VT323', monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  /* Light Mode (Phone Interface Theme) */
+  --background: #FFFEF5;
+  /* Creamy paper background */
+  --foreground: #3B5998;
+  /* Classic interface blue text */
+  --card-bg: #FFFFFF;
+  --card-text: #3B5998;
+  --border: rgb(213, 205, 203);
+  /* Requested soft beige/grey */
+  --input-bg: #FFFFFF;
+  --input-text: #3B5998;
+  --primary: #3B5998;
+  /* Interface Blue */
+  --secondary: #FF69B4;
+  /* Heart Pink */
+  --accent: #00D9FF;
+}
+
+.dark {
+  /* Dark Mode (Retro Neon Theme - Lightened) */
+  --background: #2d2d2d;
+  --foreground: #ffffff;
+  --card-bg: #3d3d3d;
+  --card-text: #ffffff;
+  --border: #4d4d4d;
+  --input-bg: #3d3d3d;
+  --input-text: #ffffff;
+  --primary: #4d94ff;
+  /* Lighter Blue for better contrast */
+  --secondary: #ff85c2;
+  /* Lighter Pink */
+  --accent: #33e0ff;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  /* VT323 is smaller, bumping base size */
+  line-height: 1.4;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Adjust heading sizes for new font */
+h1 {
+  font-size: 32px;
+}
+
+h2 {
+  font-size: 24px;
+}
+
+h3 {
+  font-size: 20px;
+}
+
+h4 {
+  font-size: 18px;
+}
+
+p,
+span,
+div {
+  font-size: 18px;
+}
+
+.text-\[8px\] {
+  font-size: 16px !important;
+}
+
+/* Override readable tiny text */
+.text-\[10px\] {
+  font-size: 18px !important;
+}
+
+.text-\[12px\] {
+  font-size: 20px !important;
+}
+
+.text-\[20px\] {
+  font-size: 28px !important;
+}
+
+/* Input styling */
+input,
+textarea,
+select {
+  background: var(--input-bg);
+  color: var(--input-text);
+  border: 2px solid var(--border);
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  image-rendering: pixelated;
+  transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+  border-radius: 4px;
+  /* Slight rounding for phone interface feel */
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9CA3AF;
+  opacity: 0.6;
+}
+
+/* Button base */
+button {
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  image-rendering: pixelated;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border: 2px solid var(--background);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
 }

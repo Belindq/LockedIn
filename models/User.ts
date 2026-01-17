@@ -9,13 +9,14 @@ export type Sexuality = typeof SEXUALITY_OPTIONS[number];
 export interface IUser extends Document {
     email: string;
     passwordHash: string;
-    firstName: string;
-    lastName: string;
-    age: number;
-    gender: Gender;
-    sexuality: Sexuality;
-    homeAddress: string;
-    locationCoordinates: {
+    firstName?: string;
+    lastName?: string;
+    age?: number;
+    gender?: Gender;
+    sexuality?: Sexuality;
+    avatar?: string;
+    homeAddress?: string;
+    locationCoordinates?: {
         lat: number;
         lng: number;
     };
@@ -43,39 +44,43 @@ const UserSchema = new Schema<IUser>({
     },
     firstName: {
         type: String,
-        required: true
+        required: false
     },
     lastName: {
         type: String,
-        required: true
+        required: false
     },
     age: {
         type: Number,
-        required: true,
+        required: false,
         min: 18
+    },
+    avatar: {
+        type: String,
+        default: 'avatar1'
     },
     gender: {
         type: String,
         enum: GENDER_OPTIONS,
-        required: true
+        required: false
     },
     sexuality: {
         type: String,
         enum: SEXUALITY_OPTIONS,
-        required: true
+        required: false
     },
     homeAddress: {
         type: String,
-        required: true
+        required: false
     },
     locationCoordinates: {
         lat: {
             type: Number,
-            required: true
+            required: false
         },
         lng: {
             type: Number,
-            required: true
+            required: false
         }
     },
     interests: {

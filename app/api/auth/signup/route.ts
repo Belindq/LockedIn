@@ -3,7 +3,6 @@ import bcrypt from 'bcryptjs';
 import connectDB from '@/lib/db';
 import User from '@/models/User';
 import { signSession } from '@/lib/auth';
-import { validateAddress } from '@/lib/address';
 
 export async function POST(req: Request) {
     try {
@@ -15,20 +14,12 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Invalid JSON body', details: 'Request body is empty or malformed' }, { status: 400 });
         }
 
-        const { email, password, firstName, lastName, age, gender, sexuality, homeAddress } = body;
+        const { email, password } = body;
 
         // Basic field validation
-        if (!email || !password || !firstName || !lastName || !age || !gender || !sexuality || !homeAddress) {
+        if (!email || !password) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
-
-        // Validate address
-        const addressValidation = await validateAddress(homeAddress);
-        if (!addressValidation.isValid || !addressValidation.coordinates) {
-            return NextResponse.json({ error: 'Invalid address', details: 'Unable to verify the provided home address' }, { status: 400 });
-        }
-
-        const locationCoordinates = addressValidation.coordinates;
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -40,13 +31,6 @@ export async function POST(req: Request) {
         const user = await User.create({
             email,
             passwordHash,
-            firstName,
-            lastName,
-            age,
-            gender,
-            sexuality,
-            homeAddress: addressValidation.formattedAddress || homeAddress, // Use formatted address if available
-            locationCoordinates,
             status: 'onboarding',
         });
 

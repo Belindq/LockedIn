@@ -93,11 +93,32 @@ const __TURBOPACK__default__export__ = connectDB;
 "use strict";
 
 __turbopack_context__.s([
+    "GENDER_OPTIONS",
+    ()=>GENDER_OPTIONS,
+    "SEXUALITY_OPTIONS",
+    ()=>SEXUALITY_OPTIONS,
     "default",
     ()=>__TURBOPACK__default__export__
 ]);
 var __TURBOPACK__imported__module__$5b$externals$5d2f$mongoose__$5b$external$5d$__$28$mongoose$2c$__cjs$2c$__$5b$project$5d2f$node_modules$2f$mongoose$29$__ = __turbopack_context__.i("[externals]/mongoose [external] (mongoose, cjs, [project]/node_modules/mongoose)");
 ;
+const GENDER_OPTIONS = [
+    'male',
+    'female',
+    'non-binary',
+    'other',
+    'prefer_not_to_say'
+];
+const SEXUALITY_OPTIONS = [
+    'heterosexual',
+    'gay',
+    'lesbian',
+    'bisexual',
+    'pansexual',
+    'asexual',
+    'other',
+    'prefer_not_to_say'
+];
 const UserSchema = new __TURBOPACK__imported__module__$5b$externals$5d2f$mongoose__$5b$external$5d$__$28$mongoose$2c$__cjs$2c$__$5b$project$5d2f$node_modules$2f$mongoose$29$__["Schema"]({
     email: {
         type: String,
@@ -113,37 +134,43 @@ const UserSchema = new __TURBOPACK__imported__module__$5b$externals$5d2f$mongoos
     },
     firstName: {
         type: String,
-        required: true
+        required: false
     },
     lastName: {
         type: String,
-        required: true
+        required: false
     },
     age: {
         type: Number,
-        required: true,
+        required: false,
         min: 18
+    },
+    avatar: {
+        type: String,
+        default: 'avatar1'
     },
     gender: {
         type: String,
-        required: true
+        enum: GENDER_OPTIONS,
+        required: false
     },
     sexuality: {
         type: String,
-        required: true
+        enum: SEXUALITY_OPTIONS,
+        required: false
     },
     homeAddress: {
         type: String,
-        required: true
+        required: false
     },
     locationCoordinates: {
         lat: {
             type: Number,
-            required: true
+            required: false
         },
         lng: {
             type: Number,
-            required: true
+            required: false
         }
     },
     interests: {
@@ -253,8 +280,9 @@ async function POST(req) {
                 status: 400
             });
         }
-        const { email, password, firstName, lastName, age, gender, sexuality, homeAddress, locationCoordinates } = body;
-        if (!email || !password || !firstName || !lastName || !age || !gender || !sexuality || !homeAddress || !locationCoordinates) {
+        const { email, password } = body;
+        // Basic field validation
+        if (!email || !password) {
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
                 error: 'Missing required fields'
             }, {
@@ -275,13 +303,6 @@ async function POST(req) {
         const user = await __TURBOPACK__imported__module__$5b$project$5d2f$models$2f$User$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].create({
             email,
             passwordHash,
-            firstName,
-            lastName,
-            age,
-            gender,
-            sexuality,
-            homeAddress,
-            locationCoordinates,
             status: 'onboarding'
         });
         const token = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$auth$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["signSession"])({

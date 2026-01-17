@@ -163,7 +163,7 @@ export default function OnboardingPage() {
                 locationCoordinates: { lat: 0, lng: 0 }, // Mock coord for now
             });
             setUserStatus("waiting_for_match");
-            router.push('/quests');
+            router.push('/matches');
 
         } catch (err: any) {
             setError(err.message);

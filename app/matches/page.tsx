@@ -83,13 +83,10 @@ export default function MatchesPage() {
                         <div className="text-4xl animate-bounce">⏳</div>
                         <div className="space-y-2">
                             <p className="font-pixel text-lg text-card-text">
-                                You are on the waitlist.
+                                Finding your perfect match...
                             </p>
                             <p className="text-xs font-pixel text-gray-500">
-                                Matching runs daily at 8 PM.
-                            </p>
-                            <p className="text-xs font-pixel text-primary">
-                                Ensure your profile is 100% complete!
+                                Matching may take up to 1 week. You will receive an email once matched successfully.
                             </p>
                         </div>
                     </div>
@@ -102,7 +99,7 @@ export default function MatchesPage() {
                 )}
 
                 {/* Debug Control */}
-                <div className="mt-8 pt-6 border-t-2 border-border border-dashed">
+                <div className="hidden mt-8 pt-6 border-t-2 border-border border-dashed">
                     <p className="text-[10px] uppercase font-bold text-gray-400 mb-3 tracking-widest">
                         Debug Zone
                     </p>

@@ -2,9 +2,28 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@/lib/UserContext';
+import { Button } from '@/components/Button';
+import { Stepper } from '@/components/Stepper';
+import { Card } from '@/components/Card';
+import Link from 'next/link';
+
+const STEPS = [
+    { label: "Avatar", number: 1 },
+    { label: "Basics", number: 2 },
+    { label: "Location", number: 3 },
+    { label: "Identity", number: 4 },
+    { label: "Preferences", number: 5 },
+];
 
 export default function OnboardingPage() {
     const router = useRouter();
+    const { updateUser, setUserStatus } = useUser();
+    const [currentStep, setCurrentStep] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    // Consolidated Form State
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -19,32 +38,71 @@ export default function OnboardingPage() {
         dealBreakers: '',
         avatar: 'avatar1'
     });
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
 
     // Enum Options
-    const genderOptions = ['male', 'female', 'non-binary', 'other', 'prefer_not_to_say'];
-    const sexualityOptions = ['heterosexual', 'gay', 'lesbian', 'bisexual', 'pansexual', 'asexual', 'other', 'prefer_not_to_say'];
+    const genderOptions = ['Male', 'Female', 'Non-binary', 'Other', 'Prefer not to say'];
+    const sexualityOptions = ['Heterosexual', 'Gay', 'Lesbian', 'Bisexual', 'Pansexual', 'Asexual', 'Other', 'Prefer not to say'];
     const avatars = [
         { id: 'avatar1', label: 'Avatar 1', icon: '👤' },
         { id: 'avatar2', label: 'Avatar 2', icon: '👩' },
         { id: 'avatar3', label: 'Avatar 3', icon: '🧑' },
         { id: 'avatar4', label: 'Avatar 4', icon: '🤖' },
+        { id: 'avatar5', label: 'Avatar 5', icon: '🦊' },
+        { id: 'avatar6', label: 'Avatar 6', icon: '👽' },
     ];
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
+    const updateField = (field: string, value: string) => {
+        setFormData((prev) => ({ ...prev, [field]: value }));
     };
 
     const handleAvatarSelect = (avatarId: string) => {
-        setFormData({ ...formData, avatar: avatarId });
+        updateField('avatar', avatarId);
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const validateStep = (step: number): boolean => {
+        switch (step) {
+            case 1: // Avatar
+                return !!formData.avatar;
+            case 2: // Basics
+                return !!(
+                    formData.firstName &&
+                    formData.lastName &&
+                    formData.age &&
+                    formData.gender &&
+                    formData.sexuality
+                );
+            case 3: // Location
+                return !!(formData.homeAddress);
+            case 4: // Identity
+                return !!(formData.interests && formData.values);
+            case 5: // Preferences
+                return !!(
+                    formData.mustHaves &&
+                    formData.niceToHaves &&
+                    formData.dealBreakers
+                );
+            default:
+                return false;
+        }
+    };
+
+    const handleNext = () => {
+        if (validateStep(currentStep)) {
+            if (currentStep < 5) {
+                setCurrentStep(currentStep + 1);
+            }
+        }
+    };
+
+    const handleBack = () => {
+        if (currentStep > 1) {
+            setCurrentStep(currentStep - 1);
+        }
+    };
+
+    const handleSubmit = async () => {
+        if (!validateStep(5)) return;
+
         setLoading(true);
         setError('');
 
@@ -52,13 +110,14 @@ export default function OnboardingPage() {
             const payload = {
                 ...formData,
                 age: parseInt(formData.age),
+                hasCompletedAvatar: true,
+                hasCompletedQuestionnaire: true,
             };
 
+            // Call API
             const res = await fetch('/api/onboarding', {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
             });
 
@@ -72,7 +131,14 @@ export default function OnboardingPage() {
                 throw new Error(data.details || data.error || 'Failed to complete profile');
             }
 
-            router.push('/dashboard');
+            // Update Context
+            updateUser({
+                ...payload,
+                locationCoordinates: { lat: 0, lng: 0 }, // Mock coord for now
+            });
+            setUserStatus("waiting_for_match");
+            router.push('/quests');
+
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -81,116 +147,243 @@ export default function OnboardingPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg">
-                <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Complete Your Profile</h2>
-                <p className="text-gray-600 mb-8">We just need a few more details to find your perfect match.</p>
-
-                {error && (
-                    <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
-                        <span className="block sm:inline">{error}</span>
-                    </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-8">
-
-                    {/* Avatar Selection */}
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900 border-b pb-2 mb-4">Choose Your Avatar</h3>
-                        <div className="flex gap-4 justify-center sm:justify-start">
-                            {avatars.map((av) => (
-                                <button
-                                    key={av.id}
-                                    type="button"
-                                    onClick={() => handleAvatarSelect(av.id)}
-                                    className={`flex flex-col items-center justify-center p-4 rounded-full w-20 h-20 border-2 transition-all ${formData.avatar === av.id
-                                            ? 'border-indigo-600 bg-indigo-50 scale-110 shadow-md'
-                                            : 'border-gray-200 hover:border-indigo-300'
-                                        }`}
-                                >
-                                    <span className="text-2xl">{av.icon}</span>
-                                    <span className="text-xs mt-1 text-gray-600">{av.label}</span>
-                                </button>
-                            ))}
-                        </div>
+        <div className="h-full bg-background flex flex-col">
+            <div className="flex-1 overflow-y-auto py-8 px-4">
+                <div className="max-w-2xl mx-auto">
+                    {/* Header */}
+                    <div className="text-center mb-8">
+                        <h1 className="text-[20px] font-pixel text-primary mb-2 uppercase tracking-widest">
+                            Setup Profile
+                        </h1>
+                        <p className="text-[12px] font-pixel text-gray-500">
+                            Step {currentStep} of {STEPS.length}
+                        </p>
                     </div>
 
-                    {/* Personal Details Section */}
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900 border-b pb-2 mb-4">Personal Details</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">First Name</label>
-                                <input name="firstName" type="text" required value={formData.firstName} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Last Name</label>
-                                <input name="lastName" type="text" required value={formData.lastName} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Age</label>
-                                <input name="age" type="number" min="18" required value={formData.age} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Gender</label>
-                                <select name="gender" required value={formData.gender} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                    <option value="">Select...</option>
-                                    {genderOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Sexuality</label>
-                                <select name="sexuality" required value={formData.sexuality} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                    <option value="">Select...</option>
-                                    {sexualityOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                                </select>
-                            </div>
-                            <div className="col-span-1 md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-700">Home Address</label>
-                                <input name="homeAddress" type="text" required placeholder="Full address for validation" value={formData.homeAddress} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                            </div>
-                        </div>
-                    </div>
+                    {/* Stepper */}
+                    <Stepper steps={STEPS} currentStep={currentStep} />
 
-                    {/* Preferences Section */}
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900 border-b pb-2 mb-4">Your Preferences</h3>
-                        <div className="space-y-4">
-                            {[
-                                { name: 'interests', label: 'Interests', placeholder: 'Hiking, Coding, Sci-Fi...' },
-                                { name: 'values', label: 'Values', placeholder: 'Honesty, Ambition, Kindness...' },
-                                { name: 'mustHaves', label: 'Must Haves (in a partner)', placeholder: 'Good communicator, Loves dogs...' },
-                                { name: 'niceToHaves', label: 'Nice to Haves', placeholder: 'Tall, Likes sushi...' },
-                                { name: 'dealBreakers', label: 'Deal Breakers', placeholder: 'Smoking, Rudeness...' },
-                            ].map((field) => (
-                                <div key={field.name}>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        {field.label}
-                                    </label>
+                    {/* Form Content */}
+                    <Card className="mt-8 bg-card border-2 border-border mb-8 shadow-none">
+                        {error && (
+                            <div className="bg-red-50 border-2 border-red-500 text-red-700 px-4 py-3 mb-4 font-pixel text-sm">
+                                {error}
+                            </div>
+                        )}
+
+                        {/* Step 1: Avatar */}
+                        {currentStep === 1 && (
+                            <div className="space-y-6">
+                                <h2 className="text-[14px] font-pixel text-card-text text-center uppercase">
+                                    Choose Your Avatar
+                                </h2>
+                                <div className="grid grid-cols-3 gap-4 place-items-center">
+                                    {avatars.map((av) => (
+                                        <button
+                                            key={av.id}
+                                            type="button"
+                                            onClick={() => handleAvatarSelect(av.id)}
+                                            className={`flex flex-col items-center justify-center p-4 rounded-lg w-24 h-24 border-2 transition-all font-pixel ${formData.avatar === av.id
+                                                ? 'border-primary bg-indigo-50 shadow-[2px_2px_0px_0px_rgba(59,89,152,0.5)] translate-x-[1px] translate-y-[1px]'
+                                                : 'border-border hover:border-primary hover:bg-gray-50'
+                                                }`}
+                                        >
+                                            <span className="text-3xl mb-2">{av.icon}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                                <p className="text-center text-[10px] text-gray-400 font-pixel">
+                                    Select an icon that represents you
+                                </p>
+                            </div>
+                        )}
+
+                        {/* Step 2: Basics */}
+                        {currentStep === 2 && (
+                            <div className="space-y-4">
+                                <h2 className="text-[14px] font-pixel text-card-text mb-4 uppercase border-b-2 border-border pb-2">
+                                    Basic Info
+                                </h2>
+                                <div className="grid grid-cols-1 gap-4">
+                                    <div>
+                                        <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">First Name</label>
+                                        <input
+                                            type="text"
+                                            value={formData.firstName}
+                                            onChange={(e) => updateField("firstName", e.target.value)}
+                                            className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px]"
+                                            placeholder="Your First Name"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Last Name</label>
+                                        <input
+                                            type="text"
+                                            value={formData.lastName}
+                                            onChange={(e) => updateField("lastName", e.target.value)}
+                                            className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px]"
+                                            placeholder="Your Last Name"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Age</label>
+                                        <input
+                                            type="number"
+                                            value={formData.age}
+                                            onChange={(e) => updateField("age", e.target.value)}
+                                            className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px]"
+                                            placeholder="18+"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Gender</label>
+                                        <select
+                                            value={formData.gender}
+                                            onChange={(e) => updateField("gender", e.target.value)}
+                                            className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px]"
+                                        >
+                                            <option value="">Select...</option>
+                                            {genderOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Sexuality</label>
+                                        <select
+                                            value={formData.sexuality}
+                                            onChange={(e) => updateField("sexuality", e.target.value)}
+                                            className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px]"
+                                        >
+                                            <option value="">Select...</option>
+                                            {sexualityOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Step 3: Location */}
+                        {currentStep === 3 && (
+                            <div className="space-y-4">
+                                <h2 className="text-[14px] font-pixel text-card-text mb-4 uppercase border-b-2 border-border pb-2">
+                                    Location
+                                </h2>
+                                <div>
+                                    <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Home Address</label>
+                                    <input
+                                        type="text"
+                                        value={formData.homeAddress}
+                                        onChange={(e) => updateField("homeAddress", e.target.value)}
+                                        placeholder="123 Main St, City, State"
+                                        className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px]"
+                                    />
+                                    <p className="mt-2 text-[10px] font-pixel text-gray-400">
+                                        We use this to find quest locations near you.
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Step 4: Identity */}
+                        {currentStep === 4 && (
+                            <div className="space-y-4">
+                                <h2 className="text-[14px] font-pixel text-card-text mb-4 uppercase border-b-2 border-border pb-2">
+                                    Identity
+                                </h2>
+                                <div>
+                                    <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Interests</label>
                                     <textarea
-                                        name={field.name}
-                                        required
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                        rows={2}
-                                        placeholder={field.placeholder}
-                                        value={(formData as any)[field.name]}
-                                        onChange={handleChange}
+                                        value={formData.interests}
+                                        onChange={(e) => updateField("interests", e.target.value)}
+                                        placeholder="Hiking, Coding, Sci-Fi..."
+                                        rows={4}
+                                        className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px] resize-none"
                                     />
                                 </div>
-                            ))}
-                        </div>
-                    </div>
+                                <div>
+                                    <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Values</label>
+                                    <textarea
+                                        value={formData.values}
+                                        onChange={(e) => updateField("values", e.target.value)}
+                                        placeholder="Authenticity, Curiosity, Kindness..."
+                                        rows={4}
+                                        className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px] resize-none"
+                                    />
+                                </div>
+                            </div>
+                        )}
 
-                    <div className="pt-4">
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white ${loading ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors`}
-                        >
-                            {loading ? 'Completing Profile...' : 'Complete Profile & Find Matches'}
-                        </button>
-                    </div>
-                </form>
+                        {/* Step 5: Preferences */}
+                        {currentStep === 5 && (
+                            <div className="space-y-4">
+                                <h2 className="text-[14px] font-pixel text-card-text mb-4 uppercase border-b-2 border-border pb-2">
+                                    Preferences
+                                </h2>
+                                <div>
+                                    <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Must-Haves</label>
+                                    <textarea
+                                        value={formData.mustHaves}
+                                        onChange={(e) => updateField("mustHaves", e.target.value)}
+                                        placeholder="Good communication, shared humor..."
+                                        rows={3}
+                                        className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px] resize-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Nice-to-Haves</label>
+                                    <textarea
+                                        value={formData.niceToHaves}
+                                        onChange={(e) => updateField("niceToHaves", e.target.value)}
+                                        placeholder="Tall, likes sushi..."
+                                        rows={3}
+                                        className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px] resize-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-pixel text-gray-500 mb-1 uppercase">Deal-Breakers</label>
+                                    <textarea
+                                        value={formData.dealBreakers}
+                                        onChange={(e) => updateField("dealBreakers", e.target.value)}
+                                        placeholder="Smoking, rudeness..."
+                                        rows={3}
+                                        className="w-full bg-input-bg border-2 border-border text-input-text p-2 focus:outline-none focus:border-primary font-pixel text-[12px] resize-none"
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Navigation Buttons */}
+                        <div className="flex justify-between mt-8 pt-6 border-t-2 border-border">
+                            <Button
+                                variant="ghost"
+                                onClick={handleBack}
+                                disabled={currentStep === 1 || loading}
+                                className="font-pixel uppercase text-sm"
+                            >
+                                Back
+                            </Button>
+
+                            {currentStep < 5 ? (
+                                <Button
+                                    variant="primary"
+                                    onClick={handleNext}
+                                    disabled={!validateStep(currentStep)}
+                                    className="font-pixel uppercase text-sm"
+                                >
+                                    Next
+                                </Button>
+                            ) : (
+                                <Button
+                                    variant="primary"
+                                    onClick={handleSubmit}
+                                    disabled={!validateStep(currentStep) || loading}
+                                    className="font-pixel uppercase text-sm"
+                                >
+                                    {loading ? 'Completing...' : 'Finish'}
+                                </Button>
+                            )}
+                        </div>
+                    </Card>
+                </div>
             </div>
         </div>
     );

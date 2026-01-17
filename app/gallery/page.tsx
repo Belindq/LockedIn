@@ -21,7 +21,7 @@ export default function GalleryPage() {
 
     if (user.status !== "matched" || !galleryItems || galleryItems.length === 0) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="h-full bg-background flex flex-col items-center justify-center p-4">
                 <EmptyState
                     icon="🖼️"
                     heading="No gallery items yet"

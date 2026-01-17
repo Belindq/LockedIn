@@ -85,7 +85,7 @@ export default function QuestsPage() {
                                     <div className="flex-1 bg-card text-card-text border-2 border-border p-4">
                                         <div className="flex justify-between items-start mb-2">
                                             <div className="flex-1">
-                                                <h3 className="font-bold text-[10px] mb-1 font-pixel uppercase tracking-wider text-primary">AI-GENERATED QUEST</h3>
+                                                <h3 className="font-bold text-[10px] mb-1 font-pixel uppercase tracking-wider text-primary">QUEST</h3>
                                                 <p className="text-[10px] text-card-text font-medium">
                                                     {challenge.status === "locked" ? "???" : challenge.title}
                                                 </p>

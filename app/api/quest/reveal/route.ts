@@ -46,7 +46,12 @@ export async function GET(request: NextRequest) {
         }
 
         // Check if quest is complete
-        const complete = await isQuestComplete(quest._id);
+        // Optimization: If already marked completed, skip the heavy check
+        let complete = quest.status === 'completed';
+
+        if (!complete) {
+            complete = await isQuestComplete(quest._id);
+        }
 
         if (!complete) {
             return NextResponse.json(

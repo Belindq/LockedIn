@@ -27,15 +27,16 @@ export async function GET(request: NextRequest) {
         }
 
         // Find all approved progress with images
+        // Optimization: Exclude heavy image data
         const approvedImages = await ChallengeProgress.find({
             questId: quest._id,
             status: 'approved',
             submissionImageBase64: { $exists: true, $ne: '' }
-        }).sort({ submittedAt: 1 });
+        }).sort({ submittedAt: 1 }).select('-submissionImageBase64');
 
         const items = approvedImages.map(p => ({
             id: p._id,
-            imageUrl: p.submissionImageBase64,
+            // imageUrl: p.submissionImageBase64, // Removed for performance
             caption: p.submissionText || "Shared photo",
             author: p.userId.toString() === userId ? "user" : "partner",
             timestamp: p.submittedAt

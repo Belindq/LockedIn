@@ -93,7 +93,12 @@ export default function GalleryPage() {
                                 <div className="bg-white p-2 pb-8 shadow-md border border-gray-200 cursor-pointer">
                                     {/* Image Display */}
                                     <div className="w-full aspect-square bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden mb-2">
-                                        <img src={item.imageUrl} alt={item.caption} className="w-full h-full object-cover" />
+                                        <img 
+                                            src={`/api/challenges/image/${item.id}`} 
+                                            alt={item.caption} 
+                                            className="w-full h-full object-cover"
+                                            loading="lazy" 
+                                        />
                                     </div>
                                     {/* Minimal Caption if any */}
                                     <div className="text-[6px] font-pixel text-gray-400 truncate">{item.caption}</div>
@@ -209,7 +214,7 @@ export default function GalleryPage() {
 
                         {/* Image */}
                         <div className="w-full h-96 bg-background border-2 border-border mb-4 flex items-center justify-center overflow-hidden">
-                            <img src={selectedGalleryItem.imageUrl} alt={selectedGalleryItem.caption} className="w-full h-full object-contain" />
+                            <img src={`/api/challenges/image/${selectedGalleryItem.id}`} alt={selectedGalleryItem.caption} className="w-full h-full object-contain" />
                         </div>
 
                         {/* Caption */}

@@ -28,12 +28,40 @@ export default function QuestsPage() {
             setLoading(false);
         }
         fetchActiveQuest();
-    }, [contextQuest]);
+    }, []);
 
+    // Poll for quest status changes (detect if partner unmatched)
+    useEffect(() => {
+        if (!activeQuest) return;
 
-    const fetchActiveQuest = async (isManual = false) => {
-        // Only set loading true if it's the first fetch or a manual one
-        if (isManual || !activeQuest) setLoading(true);
+        const pollInterval = setInterval(async () => {
+            try {
+                const res = await fetch(`/api/quest/active`, { cache: 'no-store' });
+
+                // If quest no longer exists (404), partner has unmatched
+                if (res.status === 404) {
+                    clearInterval(pollInterval);
+                    alert('Your partner has unmatched. You have been returned to the matching pool.');
+                    router.push('/matches');
+                    return;
+                }
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data) {
+                        setActiveQuest(data);
+                    }
+                }
+            } catch (err) {
+                console.error('Error polling quest status:', err);
+            }
+        }, 5000); // Poll every 5 seconds
+
+        return () => clearInterval(pollInterval); // Cleanup on unmount
+    }, [activeQuest, router]);
+
+    const fetchActiveQuest = async () => {
+        setLoading(true);
         try {
             const res = await fetch(`/api/quest/active`, { cache: 'no-store' });
 

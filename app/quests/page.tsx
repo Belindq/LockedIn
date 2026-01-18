@@ -297,12 +297,20 @@ export default function QuestsPage() {
                                                             type="file"
                                                             accept="image/*"
                                                             className="text-[8px] w-full mb-2"
-                                                            onChange={(e) => {
+                                                            onChange={async (e) => {
                                                                 const file = e.target.files?.[0];
                                                                 if (file) {
-                                                                    const reader = new FileReader();
-                                                                    reader.onloadend = () => setSubmissionImage(reader.result as string);
-                                                                    reader.readAsDataURL(file);
+                                                                    try {
+                                                                        const { compressImage } = await import('@/lib/image-utils');
+                                                                        setLoading(true); // Show local loading state while compressing
+                                                                        const compressed = await compressImage(file);
+                                                                        setSubmissionImage(compressed);
+                                                                        setLoading(false);
+                                                                    } catch (err) {
+                                                                        console.error("Compression failed", err);
+                                                                        alert("Failed to process image. Try a smaller one.");
+                                                                        setLoading(false);
+                                                                    }
                                                                 }
                                                             }}
                                                         />
@@ -348,11 +356,32 @@ export default function QuestsPage() {
                                                 <div className="bg-white dark:bg-gray-800 border-2 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(59,89,152,0.1)]">
                                                     <div className="font-bold text-[10px] text-primary mb-3">{(partner?.firstName || activeQuest.quest?.partnerName || 'Partner')} needs approval!</div>
 
-                                                    {challenge.partnerStatus.submissionImageBase64 && (
+                                                    {challenge.partnerStatus.submissionImageBase64 ? (
                                                         <div className="mb-3">
                                                             <div className="text-[8px] font-pixel text-gray-500 mb-1">SUBMISSION:</div>
-                                                            <img src={challenge.partnerStatus.submissionImageBase64} alt="Partner Submission" className="w-full max-h-48 object-contain border-2 border-border" />
+                                                            {/* Optimized: Use lazy-loading ID-based URL if no direct base64 (which is now stripped) */}
+                                                            <img 
+                                                                src={challenge.partnerStatus.submissionImageBase64.startsWith('data:') 
+                                                                    ? challenge.partnerStatus.submissionImageBase64 
+                                                                    : `/api/challenges/image/${challenge.partnerStatus.progressId}`} 
+                                                                alt="Partner Submission" 
+                                                                className="w-full max-h-48 object-contain border-2 border-border" 
+                                                                loading="lazy"
+                                                            />
                                                         </div>
+                                                    ) : (
+                                                        /* Fallback checks if progressId exists but no Base64 (which is the new standard) */
+                                                        challenge.partnerStatus.progressId && (
+                                                            <div className="mb-3">
+                                                                <div className="text-[8px] font-pixel text-gray-500 mb-1">SUBMISSION:</div>
+                                                                <img 
+                                                                    src={`/api/challenges/image/${challenge.partnerStatus.progressId}`} 
+                                                                    alt="Partner Submission" 
+                                                                    className="w-full max-h-48 object-contain border-2 border-border" 
+                                                                    loading="lazy"
+                                                                />
+                                                            </div>
+                                                        )
                                                     )}
 
                                                     {challenge.partnerStatus.submissionText && (

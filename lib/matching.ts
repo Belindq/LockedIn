@@ -144,7 +144,9 @@ export async function runMatchingAlgorithm() {
                             values: validB.values,
                             mustHaves: validB.mustHaves,
                             niceToHaves: validB.niceToHaves
-                        }
+                        },
+                        validA.firstName,
+                        validB.firstName
                     );
 
                     const expiresAt = new Date();

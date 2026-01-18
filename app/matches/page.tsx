@@ -96,30 +96,6 @@ export default function MatchesPage() {
                         {error}
                     </p>
                 )}
-
-                {/* Debug Control */}
-                <div className="mt-8 pt-6 border-t-2 border-border border-dashed">
-                    <p className="text-[10px] uppercase font-bold text-gray-400 mb-3 tracking-widest">
-                        Debug Zone
-                    </p>
-                    <Button
-                        variant="secondary"
-                        onClick={async () => {
-                            try {
-                                const res = await fetch('/api/match/run', { method: 'POST' });
-                                const data = await res.json();
-                                console.log('Match Result:', data);
-                                alert('Matching Algorithm Run!\n\nCheck server console for details.\nResult: ' + JSON.stringify(data, null, 2));
-                                window.location.reload();
-                            } catch (e) {
-                                alert('Matching Failed');
-                            }
-                        }}
-                        className="text-[10px] py-2 px-4 w-full opacity-50 hover:opacity-100 transition-opacity"
-                    >
-                        ⚡ FORCE MATCH
-                    </Button>
-                </div>
             </Card>
         </div>
     );

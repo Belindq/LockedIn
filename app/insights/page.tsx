@@ -10,7 +10,7 @@ import { ConfirmModal } from "@/components/ConfirmModal";
 import Link from "next/link";
 
 export default function InsightsPage() {
-    const { user, partner, progress, setUserStatus, sync } = useUser();
+    const { user, partner, quest, progress, setUserStatus, sync } = useUser();
     const [insights, setInsights] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [showUnmatchModal, setShowUnmatchModal] = useState(false);

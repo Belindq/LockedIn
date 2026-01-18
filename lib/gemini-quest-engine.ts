@@ -360,9 +360,10 @@ Goal:
 1. Find a shared thread, a funny contrast, or a deeper personality trait revealed by their answers.
 2. USE THEIR NAMES ("${userAName}" and "${userBName}") directly in the insight.
 3. Be specific and data-driven based on their actual text. Avoid generic platitudes.
-4. Keep it punchy, engaging, and relevant (1-2 sentences).
-5. Generate a catchy title for this insight.
-6. If one response is an image, the response text might be a brief description or just "Image submitted". Focus on the text provided.
+4. VARIETY: Generate a unique perspective. Sometimes be humorous, sometimes deep, sometimes observant. Avoid repeating the same "compatibility" tropes.
+5. Keep it punchy, engaging, and relevant (1-2 sentences).
+6. Generate a catchy title for this insight.
+7. If one response is an image, the response text might be a brief description or just "Image submitted". Focus on the text provided.
 
 Return ONLY a valid JSON object:
 {

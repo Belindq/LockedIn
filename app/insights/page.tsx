@@ -184,7 +184,7 @@ export default function InsightsPage() {
                         {hoveredAvatar === "partner" && progress && (
                             <ProgressBar
                                 value={progress?.partner || 0}
-                                label={`${partner?.firstName || 'Partner'}'s Progress`}
+                                label={`${partner?.firstName || "Partner"}'s Progress`}
                                 variant="partner"
                             />
                         )}

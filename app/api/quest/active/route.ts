@@ -53,8 +53,7 @@ export async function GET(request: NextRequest) {
         const allProgress = await ChallengeProgress.find({
             challengeId: { $in: challenges.map(c => c._id) },
             userId: { $in: [currentQuest.userAId, currentQuest.userBId] }
-        })
-            .select('-submissionImageBase64'); // Exclude heavy images for list view efficiency
+        });
 
         const partnerIdStr = (currentQuest.userAId.toString() === userId)
             ? currentQuest.userBId.toString()

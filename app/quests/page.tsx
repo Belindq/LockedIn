@@ -346,15 +346,24 @@ export default function QuestsPage() {
                                         {partnerNeedsApproval && (
                                             <div className="mt-3 pt-3 border-t-2 border-border">
                                                 <div className="bg-white dark:bg-gray-800 border-2 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(59,89,152,0.1)]">
-                                                    <div className="font-bold text-[8px] text-primary mb-3">{(partner?.firstName || activeQuest.quest?.partnerName || 'Partner')} needs approval!</div>
+                                                    <div className="font-bold text-[10px] text-primary mb-3">{(partner?.firstName || activeQuest.quest?.partnerName || 'Partner')} needs approval!</div>
+
                                                     {challenge.partnerStatus.submissionImageBase64 && (
-                                                        <img src={challenge.partnerStatus.submissionImageBase64} alt="Partner Submission" className="h-24 mb-3 border-2 border-border" />
-                                                    )}
-                                                    {challenge.partnerStatus.submissionText && (
-                                                        <div className="text-[8px] italic mb-3 bg-[#fdfdfd] p-3 border border-border text-foreground">
-                                                            "{challenge.partnerStatus.submissionText}"
+                                                        <div className="mb-3">
+                                                            <div className="text-[8px] font-pixel text-gray-500 mb-1">SUBMISSION:</div>
+                                                            <img src={challenge.partnerStatus.submissionImageBase64} alt="Partner Submission" className="w-full max-h-48 object-contain border-2 border-border" />
                                                         </div>
                                                     )}
+
+                                                    {challenge.partnerStatus.submissionText && (
+                                                        <div className="mb-4">
+                                                            <div className="text-[8px] font-pixel text-gray-500 mb-1">RESPONSE:</div>
+                                                            <div className="text-[12px] font-medium italic bg-[#fdfdfd] p-3 border border-border text-foreground leading-relaxed">
+                                                                "{challenge.partnerStatus.submissionText}"
+                                                            </div>
+                                                        </div>
+                                                    )}
+
                                                     <div className="flex gap-2">
                                                         <Button
                                                             variant="primary"
@@ -468,7 +477,7 @@ export default function QuestsPage() {
                             {hoveredAvatar === "partner" && (
                                 <ProgressBar
                                     value={partnerProgress}
-                                    label={`${activeQuest.quest.partnerName}'s Progress`}
+                                    label={`${partner?.firstName || partnerName}'s Progress`}
                                     variant="partner"
                                 />
                             )}

@@ -36,7 +36,9 @@ async function test() {
                 values: "loyalty, creativity",
                 mustHaves: "intelligence",
                 niceToHaves: "cooking"
-            }
+            },
+            "User A",
+            "User B"
         );
         console.log('SUCCESS!');
         console.log(JSON.stringify(challenges, null, 2));

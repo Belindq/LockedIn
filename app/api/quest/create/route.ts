@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Check if quest already exists and is active
-        const existingQuest = await Quest.findOne({ 
+        const existingQuest = await Quest.findOne({
             matchId,
             status: { $in: ['active', 'pending_acceptance'] }
         });
@@ -83,7 +83,9 @@ export async function POST(request: NextRequest) {
                 values: userB.values,
                 mustHaves: userB.mustHaves,
                 niceToHaves: userB.niceToHaves
-            }
+            },
+            userA.firstName || 'Partner A',
+            userB.firstName || 'Partner B'
         );
 
         // Create quest (expires in 7 days for hackathon)

@@ -183,7 +183,7 @@ export async function detectFaceInImage(imageBase64: string): Promise<{
     blocked: boolean;
     error?: string;
 }> {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const prompt = `Analyze this image and determine if it contains a clearly visible human face.
   
@@ -344,7 +344,7 @@ export async function generateChallengeInsight(
     userAResponse: string,
     userBResponse: string
 ): Promise<{ title: string; insight: string; confidenceScore: number }> {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const prompt = `You are a relationship analyst for a dating app called LockedIn. 
 Analyze these two responses to a challenge and generate a unique compatibility insight or personality reveal.

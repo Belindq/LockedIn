@@ -179,8 +179,17 @@ export async function POST(request: NextRequest) {
                     const cityContext = `${userA.homeAddress || 'Unknown City'} (Coordinates: ${userA.locationCoordinates?.lat?.toFixed(4) || 0}, ${userA.locationCoordinates?.lng?.toFixed(4) || 0})`;
 
                     // Generate
+                    // Generate
                     const { generateDateIdea } = await import('@/lib/gemini-quest-engine');
-                    const dateIdea = await generateDateIdea(userA as any, userB as any, userAResponses, userBResponses, cityContext);
+                    const dateIdea = await generateDateIdea(
+                        userA as any,
+                        userB as any,
+                        userAResponses,
+                        userBResponses,
+                        cityContext,
+                        userA.firstName || "Partner A",
+                        userB.firstName || "Partner B"
+                    );
 
                     // Midpoint
                     const latA = userA.locationCoordinates?.lat || 40.7128; // Default NYC

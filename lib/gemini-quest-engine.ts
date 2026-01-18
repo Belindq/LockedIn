@@ -264,7 +264,9 @@ export async function generateDateIdea(
     userBProfile: UserProfile,
     userAResponses: string[],
     userBResponses: string[],
-    cityContext: string // e.g. "NYC" or "Coords: 40.71, -74.00"
+    cityContext: string, // e.g. "NYC" or "Coords: 40.71, -74.00"
+    userAName: string,
+    userBName: string
 ): Promise<{
     title: string;
     description: string;
@@ -274,14 +276,14 @@ export async function generateDateIdea(
 }> {
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
-    const prompt = `You are a romantic dating expert. Design the PERFECT first date for two people who just matched and completed a connection quest.
+    const prompt = `You are a romantic dating expert. Design the PERFECT first date for two people (${userAName} and ${userBName}) who just matched and completed a connection quest.
 
-User A:
+${userAName}:
 Interests: ${userAProfile.interests}
 Values: ${userAProfile.values}
 Key phrases from their quest answers: "${userAResponses.join('", "')}"
 
-User B:
+${userBName}:
 Interests: ${userBProfile.interests}
 Values: ${userBProfile.values}
 Key phrases from their quest answers: "${userBResponses.join('", "')}"
@@ -293,10 +295,15 @@ Generate a specific, real-world style date idea that blends their interests.
 It MUST be a real, specific place if possible (e.g., "The Coffee Loft" rather than "a coffee shop").
 You MUST provide a plausible street address (or at least a neighborhood/cross-street) for the location.
 
+CRITICAL INSTRUCTIONS:
+1. Refer to the users ONLY by their first names: "${userAName}" and "${userBName}".
+2. NEVER use the terms "User A" or "User B" in your output.
+3. Make the description feel personal and tailored to them specifically.
+
 Return ONLY a valid JSON object:
 {
   "title": "Catchy Date Title",
-  "description": "A 2-3 sentence pitch of why this date is perfect for them, mentioning specific shared interests or inside jokes from their answers.",
+  "description": "A 2-3 sentence pitch of why this date is perfect for them, mentioning specific shared interests or inside jokes from their answers. Use their names!",
   "activityType": "coffee" | "drinks" | "active" | "food" | "culture" | "other",
   "locationName": "Name of a specific type of place or a real landmark",
   "address": "A specific street address or neighborhood location string"
@@ -328,7 +335,7 @@ Return ONLY a valid JSON object:
         console.error('Error generating date idea:', error);
         return {
             title: "Coffee & Conversation",
-            description: "A classic first date to get to know each other better. Based on your shared interests, a cozy cafe would be perfect.",
+            description: `A classic first date for ${userAName} and ${userBName} to get to know each other better. Based on your shared interests, a cozy cafe would be perfect.`,
             activityType: "coffee",
             locationName: "Local Cafe",
             address: "Main Street, Your City"
@@ -359,11 +366,12 @@ ${userBName}'s Response: "${userBResponse}"
 Goal: 
 1. Find a shared thread, a funny contrast, or a deeper personality trait revealed by their answers.
 2. USE THEIR NAMES ("${userAName}" and "${userBName}") directly in the insight.
-3. Be specific and data-driven based on their actual text. Avoid generic platitudes.
-4. VARIETY: Generate a unique perspective. Sometimes be humorous, sometimes deep, sometimes observant. Avoid repeating the same "compatibility" tropes.
-5. Keep it punchy, engaging, and relevant (1-2 sentences).
-6. Generate a catchy title for this insight.
-7. If one response is an image, the response text might be a brief description or just "Image submitted". Focus on the text provided.
+3. NEVER use the terms "User A" or "User B".
+4. Be specific and data-driven based on their actual text. Avoid generic platitudes.
+5. VARIETY: Generate a unique perspective. Sometimes be humorous, sometimes deep, sometimes observant. Avoid repeating the same "compatibility" tropes.
+6. Keep it punchy, engaging, and relevant (1-2 sentences).
+7. Generate a catchy title for this insight.
+8. If one response is an image, the response text might be a brief description or just "Image submitted". Focus on the text provided.
 
 Return ONLY a valid JSON object:
 {

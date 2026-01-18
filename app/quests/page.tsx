@@ -35,6 +35,14 @@ export default function QuestsPage() {
                     clearInterval(pollInterval);
                     alert('Your partner has unmatched. You have been returned to the matching pool.');
                     router.push('/matches');
+                    return;
+                }
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data) {
+                        setActiveQuest(data);
+                    }
                 }
             } catch (err) {
                 console.error('Error polling quest status:', err);

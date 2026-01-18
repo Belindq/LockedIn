@@ -3,6 +3,7 @@ import connectDB from '@/lib/db';
 import Quest from '@/models/Quest';
 import Challenge from '@/models/Challenge';
 import ChallengeProgress from '@/models/ChallengeProgress';
+import User from '@/models/User';
 import { isQuestParticipant, getPartnerUserId, isQuestComplete } from '@/lib/quest-utils';
 import mongoose from 'mongoose';
 
@@ -120,13 +121,80 @@ export async function POST(request: NextRequest) {
         // Check if quest is now complete
         const questComplete = await isQuestComplete(quest._id);
 
+        // If complete, pre-generate the reveal (date idea) so it's ready when they click Reveal
+        if (questComplete && !quest.finalDateLocation) {
+            console.log('Quest complete! Pre-generating reveal...');
+
+            try {
+                // Get users
+                const userA = await User.findById(quest.userAId);
+                const userB = await User.findById(quest.userBId);
+
+                if (userA && userB) {
+                    // Fetch responses
+                    const challenges = await Challenge.find({ questId: quest._id }).sort({ orderIndex: 1 });
+                    const challengeIds = challenges.map(c => c._id);
+                    const progress = await ChallengeProgress.find({
+                        questId: quest._id,
+                        challengeId: { $in: challengeIds }
+                    });
+
+                    const userAResponses = progress
+                        .filter(p => p.userId.toString() === userA._id.toString() && p.submissionText)
+                        .map(p => p.submissionText!);
+
+                    const userBResponses = progress
+                        .filter(p => p.userId.toString() === userB._id.toString() && p.submissionText)
+                        .map(p => p.submissionText!);
+
+                    // Context
+                    const cityContext = `${userA.homeAddress || 'Unknown City'} (Coordinates: ${userA.locationCoordinates?.lat?.toFixed(4) || 0}, ${userA.locationCoordinates?.lng?.toFixed(4) || 0})`;
+
+                    // Generate
+                    const { generateDateIdea } = await import('@/lib/gemini-quest-engine');
+                    const dateIdea = await generateDateIdea(userA as any, userB as any, userAResponses, userBResponses, cityContext);
+
+                    // Midpoint
+                    const latA = userA.locationCoordinates?.lat || 40.7128; // Default NYC
+                    const lngA = userA.locationCoordinates?.lng || -74.0060;
+                    const latB = userB.locationCoordinates?.lat || 40.7128;
+                    const lngB = userB.locationCoordinates?.lng || -74.0060;
+
+                    const midLat = (latA + latB) / 2;
+                    const midLng = (lngA + lngB) / 2;
+
+                    // Date
+                    const dateTime = new Date();
+                    dateTime.setDate(dateTime.getDate() + 3);
+                    dateTime.setHours(19, 0, 0, 0);
+
+                    // Save
+                    quest.finalDateLocation = {
+                        placeId: 'generated_ai_loc',
+                        lat: midLat,
+                        lng: midLng
+                    };
+                    quest.finalDateTime = dateTime;
+                    quest.finalDateTitle = dateIdea.title;
+                    quest.finalDateDescription = dateIdea.description;
+                    quest.finalDateActivity = dateIdea.activityType;
+                    quest.finalDateAddress = dateIdea.address;
+
+                    await quest.save();
+                    console.log('Reveal generated successfully');
+                }
+            } catch (genError) {
+                console.error('Error pre-generating reveal:', genError);
+                // Continue, reveal endpoint will retry if missing
+            }
+        }
+
         return NextResponse.json({
             success: true,
             message: approve ? 'Challenge approved!' : 'Challenge rejected',
             newStatus: partnerProgress.status,
             questComplete
         });
-
     } catch (error) {
         console.error('Error approving challenge:', error);
         return NextResponse.json(

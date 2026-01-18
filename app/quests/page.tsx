@@ -179,7 +179,7 @@ export default function QuestsPage() {
     const combinedProgress = Math.round((userProgress + partnerProgress) / 2);
 
     // Get partner name from match data
-    const partnerName = activeQuest.partnerName || "Partner";
+    const partnerName = activeQuest.quest?.partnerName || "Partner";
 
     // Active Quest View
     return (

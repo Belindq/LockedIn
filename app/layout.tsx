@@ -28,10 +28,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#1a1a1a] flex items-center justify-center min-h-screen py-8`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#1a1a1a] flex items-center justify-center min-h-screen md:py-8`}
       >
-        {/* Module Container - Wider, Squared, Retro Interface */}
-        <div className="w-full max-w-2xl h-[85vh] bg-background relative rounded-lg border-4 border-border shadow-2xl overflow-hidden flex flex-col">
+        {/* Module Container - Responsive: Full screen on mobile, limited on desktop */}
+        <div className="w-full h-full md:max-w-2xl md:h-[85vh] bg-background relative md:rounded-lg md:border-4 border-border shadow-2xl overflow-hidden flex flex-col">
           <div className="flex-1 w-full h-full overflow-hidden flex flex-col relative">
             <UserProvider>
               <ThemeProvider>

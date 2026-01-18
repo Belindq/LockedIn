@@ -15,6 +15,7 @@ import { checkAndUpdateQuestExpiration, calculateUserProgress, getCurrentChallen
 export async function GET(request: NextRequest) {
     try {
         await connectDB();
+        console.log('[DEBUG] GET /api/quest/active - DB Connected');
 
         const userId = request.headers.get('x-user-id');
         // fallback for testing if needed, or remove
@@ -33,8 +34,10 @@ export async function GET(request: NextRequest) {
         }).sort({ createdAt: -1 });
 
         if (!quest) {
+            console.log('[DEBUG] GET /api/quest/active - No quest found for user:', userId);
             return NextResponse.json({ error: 'No active quest found' }, { status: 404 });
         }
+        console.log('[DEBUG] GET /api/quest/active - Quest found:', quest._id);
 
         // Check and update expiration status
         await checkAndUpdateQuestExpiration(quest._id);
@@ -50,7 +53,8 @@ export async function GET(request: NextRequest) {
         const allProgress = await ChallengeProgress.find({
             challengeId: { $in: challenges.map(c => c._id) },
             userId: { $in: [currentQuest.userAId, currentQuest.userBId] }
-        });
+        })
+            .select('-submissionImageBase64'); // Exclude heavy images for list view efficiency
 
         const partnerIdStr = (currentQuest.userAId.toString() === userId)
             ? currentQuest.userBId.toString()
@@ -107,9 +111,28 @@ export async function GET(request: NextRequest) {
         }
         // Logic: All subsequent are locked.
 
-        // Global stats
-        const userAProgress = await calculateUserProgress(currentQuest._id, currentQuest.userAId);
-        const userBProgress = await calculateUserProgress(currentQuest._id, currentQuest.userBId);
+        // Global stats (calculated in-memory to save DB calls)
+        const challengesCount = challenges.length;
+
+        let userAApproved = 0;
+        let userBApproved = 0;
+
+        if (challengesCount > 0) {
+            // Count approved for User A
+            userAApproved = allProgress.filter(p =>
+                p.userId.toString() === currentQuest.userAId.toString() &&
+                p.status === 'approved'
+            ).length;
+
+            // Count approved for User B
+            userBApproved = allProgress.filter(p =>
+                p.userId.toString() === currentQuest.userBId.toString() &&
+                p.status === 'approved'
+            ).length;
+        }
+
+        const userAProgress = challengesCount > 0 ? Math.round((userAApproved / challengesCount) * 100) : 0;
+        const userBProgress = challengesCount > 0 ? Math.round((userBApproved / challengesCount) * 100) : 0;
 
         // Fetch partner user details
         const partnerUser = await User.findById(partnerIdStr).select('firstName');

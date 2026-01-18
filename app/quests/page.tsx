@@ -19,6 +19,7 @@ export default function QuestsPage() {
     const [submissionLocation, setSubmissionLocation] = useState<{ lat: number, lng: number } | null>(null);
     const [revealData, setRevealData] = useState<any>(null);
     const [hoveredAvatar, setHoveredAvatar] = useState<"user" | "partner" | null>(null);
+    const [isUnmatching, setIsUnmatching] = useState(false);
 
     useEffect(() => {
         // If we have data in context, use it immediately for snap-loading
@@ -193,7 +194,7 @@ export default function QuestsPage() {
     const combinedProgress = Math.round((userProgress + partnerProgress) / 2);
 
     // Get partner name from match data
-    const partnerName = activeQuest.partnerName || "Partner";
+    const partnerName = activeQuest.quest?.partnerName || "Partner";
 
     // Active Quest View
     return (
@@ -473,6 +474,7 @@ export default function QuestsPage() {
                             onClick={async () => {
                                 if (confirm('Are you sure you want to unmatch? This will end your quest and you will not be matched with this person again.')) {
                                     setLoading(true);
+                                    setIsUnmatching(true);
                                     try {
                                         const res = await fetch('/api/quest/cancel', {
                                             method: 'POST',
@@ -490,18 +492,20 @@ export default function QuestsPage() {
                                         } else {
                                             alert(`Unmatch failed: ${data.error || 'Unknown error'}`);
                                             setLoading(false);
+                                            setIsUnmatching(false);
                                         }
                                     } catch (err) {
                                         console.error('Unmatch error:', err);
                                         alert('Failed to unmatch. Please try again.');
                                         setLoading(false);
+                                        setIsUnmatching(false);
                                     }
                                 }
                             }}
                             disabled={loading}
                             className="text-[10px] bg-background border-2 border-border !text-black dark:!text-white font-bold hover:bg-red-500 hover:!text-white hover:border-red-500 text-xs px-8 py-2 font-pixel disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {loading ? 'UNMATCHING...' : 'UNMATCH'}
+                            {isUnmatching ? 'UNMATCHING...' : 'UNMATCH'}
                         </Button>
                     </div>
                 </div>

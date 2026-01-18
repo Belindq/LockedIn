@@ -38,11 +38,13 @@ interface GeneratedChallenge {
  */
 export async function generateQuestChallenges(
     userAProfile: UserProfile,
-    userBProfile: UserProfile
+    userBProfile: UserProfile,
+    userAName: string,
+    userBName: string
 ): Promise<GeneratedChallenge[]> {
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
-    const prompt = `You are a creative dating app quest designer. Generate exactly 5 unique, fun, and family-friendly challenges for two people to complete together.
+    const prompt = `You are a creative dating app quest designer. Generate exactly 5 unique, fun, and family-friendly challenges for ${userAName} and ${userBName} to complete together.
 
 CRITICAL: Create challenges with PROGRESSIVE DEPTH - start light and get progressively more personal:
 
@@ -53,24 +55,25 @@ CRITICAL: Create challenges with PROGRESSIVE DEPTH - start light and get progres
 - Challenge 4 (Personal Stories): Formative experiences, vulnerabilities, meaningful moments
 - Challenge 5 (Deep Connection): Life philosophy, authentic self, what drives them, emotional truth
 
-User A Profile:
+${userAName}'s Profile:
 - Interests: ${userAProfile.interests}
 - Values: ${userAProfile.values}
 - Must-haves: ${userAProfile.mustHaves}
 - Nice-to-haves: ${userAProfile.niceToHaves}
 
-User B Profile:
+${userBName}'s Profile:
 - Interests: ${userBProfile.interests}
 - Values: ${userBProfile.values}
 - Must-haves: ${userBProfile.mustHaves}
 - Nice-to-haves: ${userBProfile.niceToHaves}
 
 **Requirements:**
-1. Make each challenge build on the previous ones naturally
-2. Use their actual interests/values to personalize each level
-3. Keep it conversational and engaging, not like an interview
-4. NO FACES in photos! Creativity over selfies
-5. Each should feel progressively more intimate
+1. USE THEIR NAMES ("${userAName}" and "${userBName}") directly in the prompts. Never say "User A" or "User B".
+2. Make each challenge build on the previous ones naturally
+3. Use their actual interests/values to personalize each level
+4. Keep it conversational and engaging, not like an interview
+5. NO FACES in photos! Creativity over selfies
+6. Each should feel progressively more intimate
 
 Types: "text", "image", or "location"
 

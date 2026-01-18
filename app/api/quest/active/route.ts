@@ -56,17 +56,20 @@ export async function GET(request: NextRequest) {
         })
             .select('-submissionImageBase64'); // Exclude heavy images for list view efficiency
 
-        const partnerId = currentQuest.userAId.toString() === userId ? currentQuest.userBId : currentQuest.userAId;
+        const partnerIdStr = (currentQuest.userAId.toString() === userId)
+            ? currentQuest.userBId.toString()
+            : currentQuest.userAId.toString();
 
         // Map challenges with status
         const challengesWithStatus = challenges.map(challenge => {
+            const challengeIdStr = challenge._id.toString();
             const myProg = allProgress.find(p =>
-                p.challengeId.toString() === challenge._id.toString() &&
+                p.challengeId.toString() === challengeIdStr &&
                 p.userId.toString() === userId
             );
             const partnerProg = allProgress.find(p =>
-                p.challengeId.toString() === challenge._id.toString() &&
-                p.userId.toString() === partnerId.toString()
+                p.challengeId.toString() === challengeIdStr &&
+                p.userId.toString() === partnerIdStr
             );
 
             return {
@@ -75,6 +78,7 @@ export async function GET(request: NextRequest) {
                 prompt: challenge.prompt,
                 type: challenge.type,
                 timeLimitSeconds: challenge.timeLimitSeconds,
+                insights: challenge.insights ? JSON.parse(challenge.insights) : null,
                 myStatus: {
                     status: (myProg?.status === 'pending') ? 'active' : (myProg?.status || 'locked'), // Frontend expects 'active' for current
                     submittedAt: myProg?.submittedAt,
@@ -131,7 +135,7 @@ export async function GET(request: NextRequest) {
         const userBProgress = challengesCount > 0 ? Math.round((userBApproved / challengesCount) * 100) : 0;
 
         // Fetch partner user details
-        const partnerUser = await User.findById(partnerId).select('firstName');
+        const partnerUser = await User.findById(partnerIdStr).select('firstName');
 
         return NextResponse.json({
             quest: {
@@ -141,8 +145,15 @@ export async function GET(request: NextRequest) {
                 expiresAt: currentQuest.expiresAt,
                 userAProgress,
                 userBProgress,
-                partnerId: partnerId,
-                partnerName: partnerUser?.firstName || 'Partner'
+                partnerId: partnerIdStr,
+                partnerName: partnerUser?.firstName || 'Partner',
+                // Include reveal data if completed
+                finalDateTitle: currentQuest.finalDateTitle,
+                finalDateDescription: currentQuest.finalDateDescription,
+                finalDateActivity: currentQuest.finalDateActivity,
+                finalDateAddress: currentQuest.finalDateAddress,
+                finalDateTime: currentQuest.finalDateTime,
+                finalDateLocation: currentQuest.finalDateLocation
             },
             challenges: challengesWithStatus,
             currentChallengeIndex: myCurrentIndex === -1 ? challenges.length : myCurrentIndex,

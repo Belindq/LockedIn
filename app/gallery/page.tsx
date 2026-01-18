@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "@/lib/UserContext";
 import { Card } from "@/components/Card";
 import { EmptyState } from "@/components/EmptyState";
@@ -10,14 +10,47 @@ import { ConfirmModal } from "@/components/ConfirmModal";
 import Link from "next/link";
 
 export default function GalleryPage() {
-    const { user, galleryItems, partner, progress, setUserStatus } = useUser();
+    const { user, partner, progress, setUserStatus, sync } = useUser();
+    const [galleryItems, setGalleryItems] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
     const [selectedItem, setSelectedItem] = useState<string | null>(null);
     const [showUnmatchModal, setShowUnmatchModal] = useState(false);
     const [hoveredAvatar, setHoveredAvatar] = useState<"user" | "partner" | null>(null);
 
+    useEffect(() => {
+        if (user.status === "matched") {
+            fetchGallery();
+        } else {
+            setLoading(false);
+        }
+    }, [user.status]);
+
+    const fetchGallery = async () => {
+        try {
+            const res = await fetch('/api/quest/gallery');
+            const data = await res.json();
+            if (res.ok) {
+                setGalleryItems(data.items);
+            }
+        } catch (err) {
+            console.error('Error fetching gallery:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     const handleUnmatch = () => {
         setUserStatus("idle");
     };
+
+    if (loading) {
+        return (
+            <div className="h-full bg-background flex items-center justify-center font-pixel text-primary">
+                LOADING GALLERY...
+            </div>
+        );
+    }
 
     if (user.status !== "matched" || !galleryItems || galleryItems.length === 0) {
         return (
@@ -42,6 +75,12 @@ export default function GalleryPage() {
         <div className="h-full bg-background flex flex-col">
             <div className="flex-1 overflow-y-auto pb-32">
                 <div className="w-full px-4 py-8">
+                    {/* Header */}
+                    <div className="text-center mb-6">
+                        <h2 className="text-[12px] font-pixel text-secondary mb-1">MOMENTS WITH</h2>
+                        <h1 className="text-[18px] font-pixel text-primary uppercase">{partner?.firstName || 'Partner'}</h1>
+                    </div>
+
                     {/* Gallery Grid - Polaroid Style */}
                     <div className="grid grid-cols-2 gap-4">
                         {galleryItems.map((item, index) => (
@@ -52,12 +91,12 @@ export default function GalleryPage() {
                                 onClick={() => setSelectedItem(item.id)}
                             >
                                 <div className="bg-white p-2 pb-8 shadow-md border border-gray-200 cursor-pointer">
-                                    {/* Image Placeholder */}
+                                    {/* Image Display */}
                                     <div className="w-full aspect-square bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden mb-2">
-                                        <span className="text-[24px]">📷</span>
+                                        <img src={item.imageUrl} alt={item.caption} className="w-full h-full object-cover" />
                                     </div>
                                     {/* Minimal Caption if any */}
-                                    <div className="h-2 w-full bg-gray-100 rounded-full opacity-20"></div>
+                                    <div className="text-[6px] font-pixel text-gray-400 truncate">{item.caption}</div>
                                 </div>
                             </div>
                         ))}
@@ -79,10 +118,10 @@ export default function GalleryPage() {
                             <div className="w-12 h-12 bg-card border-2 border-border flex items-center justify-center text-[20px] cursor-pointer hover:border-secondary transition-colors text-foreground">
                                 👤
                             </div>
-                            {hoveredAvatar === "partner" && (
+                            {hoveredAvatar === "partner" && progress && (
                                 <div className="absolute bottom-full left-0 mb-2 w-48">
                                     <ProgressBar
-                                        value={progress.partner}
+                                        value={progress?.partner || 0}
                                         label={`${partner?.firstName || 'Partner'}'s Progress`}
                                         variant="partner"
                                     />
@@ -92,23 +131,23 @@ export default function GalleryPage() {
 
                         {/* Combined progress bar */}
                         <div className="flex-1">
-                            {hoveredAvatar === null && (
+                            {hoveredAvatar === null && progress && (
                                 <ProgressBar
-                                    value={progress.combined}
-                                    label={`QUEST ${progress.combined}%`}
+                                    value={progress?.combined || 0}
+                                    label={`QUEST ${progress?.combined || 0}%`}
                                     variant="combined"
                                 />
                             )}
-                            {hoveredAvatar === "user" && (
+                            {hoveredAvatar === "user" && progress && (
                                 <ProgressBar
-                                    value={progress.user}
+                                    value={progress?.user || 0}
                                     label="Your Progress"
                                     variant="user"
                                 />
                             )}
-                            {hoveredAvatar === "partner" && (
+                            {hoveredAvatar === "partner" && progress && (
                                 <ProgressBar
-                                    value={progress.partner}
+                                    value={progress?.partner || 0}
                                     label={`${partner?.firstName || 'Partner'}'s Progress`}
                                     variant="partner"
                                 />
@@ -124,7 +163,7 @@ export default function GalleryPage() {
                             <div className="w-12 h-12 bg-card border-2 border-border flex items-center justify-center text-[20px] cursor-pointer hover:border-primary transition-colors text-foreground">
                                 👤
                             </div>
-                            {hoveredAvatar === "user" && (
+                            {hoveredAvatar === "user" && progress && (
                                 <div className="absolute bottom-full right-0 mb-2 w-48">
                                     <ProgressBar
                                         value={progress.user}
@@ -169,8 +208,8 @@ export default function GalleryPage() {
                         </button>
 
                         {/* Image */}
-                        <div className="w-full h-64 bg-background border-2 border-border mb-4 flex items-center justify-center text-gray-500">
-                            <span className="text-4xl">📷</span>
+                        <div className="w-full h-96 bg-background border-2 border-border mb-4 flex items-center justify-center overflow-hidden">
+                            <img src={selectedGalleryItem.imageUrl} alt={selectedGalleryItem.caption} className="w-full h-full object-contain" />
                         </div>
 
                         {/* Caption */}

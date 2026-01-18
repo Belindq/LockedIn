@@ -335,3 +335,62 @@ Return ONLY a valid JSON object:
         };
     }
 }
+
+/**
+ * Generate a compatibility insight based on a single challenge and both users' responses
+ */
+export async function generateChallengeInsight(
+    challengePrompt: string,
+    userAResponse: string,
+    userBResponse: string
+): Promise<{ title: string; insight: string; confidenceScore: number }> {
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
+    const prompt = `You are a relationship analyst for a dating app called LockedIn. 
+Analyze these two responses to a challenge and generate a unique compatibility insight or personality reveal.
+
+Challenge: "${challengePrompt}"
+
+User A's Response: "${userAResponse}"
+User B's Response: "${userBResponse}"
+
+Goal: 
+1. Find a shared thread, a funny contrast, or a deeper personality trait revealed by their answers.
+2. Keep it punchy, engaging, and relevant (1-2 sentences).
+3. Generate a catchy title for this insight.
+4. If one response is an image, the response text might be a brief description or just "Image submitted". Focus on the text provided.
+
+Return ONLY a valid JSON object:
+{
+  "title": "Catchy Title",
+  "insight": "The insight text...",
+  "confidenceScore": 85
+}`;
+
+    try {
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+
+        let jsonText = text.trim();
+        const codeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+        if (codeBlockMatch) {
+            jsonText = codeBlockMatch[1].trim();
+        } else {
+            const start = text.indexOf('{');
+            const end = text.lastIndexOf('}');
+            if (start !== -1 && end !== -1) {
+                jsonText = text.substring(start, end + 1);
+            }
+        }
+
+        return JSON.parse(jsonText);
+    } catch (error) {
+        console.error('Error generating challenge insight:', error);
+        return {
+            title: "Connection Sparked",
+            insight: "Your shared responses reveal a unique window into how you both view the world.",
+            confidenceScore: 50
+        };
+    }
+}

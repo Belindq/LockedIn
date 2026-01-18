@@ -2,12 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/lib/UserContext";
 import { Button } from "@/components/Button";
 import { ProgressBar } from "@/components/ProgressBar";
 import { EmptyState } from "@/components/EmptyState";
 
 export default function QuestsPage() {
     const router = useRouter();
+
+    const { user, partner, quest: contextQuest, progress: contextProgress, sync } = useUser();
 
     const [activeQuest, setActiveQuest] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -19,6 +22,11 @@ export default function QuestsPage() {
     const [isUnmatching, setIsUnmatching] = useState(false);
 
     useEffect(() => {
+        // If we have data in context, use it immediately for snap-loading
+        if (contextQuest && !activeQuest) {
+            setActiveQuest({ quest: contextQuest, partnerName: partner?.firstName });
+            setLoading(false);
+        }
         fetchActiveQuest();
     }, []);
 
@@ -62,10 +70,36 @@ export default function QuestsPage() {
                 return;
             }
 
+            if (res.status === 404 && activeQuest) {
+                alert('Your partner has unmatched. You have been returned to the matching pool.');
+                router.push('/matches');
+                return;
+            }
+
             const data = await res.json();
 
             if (res.ok && data) {
                 setActiveQuest(data);
+
+                // If quest is completed and we have reveal data, sync it
+                if (data.quest.status === 'completed' && data.quest.finalDateTitle && !revealData) {
+                    setRevealData({
+                        location: {
+                            placeId: data.quest.finalDateLocation?.placeId,
+                            coordinates: {
+                                lat: data.quest.finalDateLocation?.lat,
+                                lng: data.quest.finalDateLocation?.lng
+                            }
+                        },
+                        dateTime: data.quest.finalDateTime,
+                        dateDetails: {
+                            title: data.quest.finalDateTitle,
+                            description: data.quest.finalDateDescription,
+                            activity: data.quest.finalDateActivity,
+                            address: data.quest.finalDateAddress
+                        }
+                    });
+                }
             }
         } catch (err) {
             console.error('Error fetching quest:', err);
@@ -199,19 +233,19 @@ export default function QuestsPage() {
                     {/* Partner Name Header */}
                     <div className="text-center mb-6">
                         <h2 className="text-[12px] font-pixel text-secondary mb-1">QUESTING WITH</h2>
-                        <h1 className="text-[18px] font-pixel text-primary uppercase">{partnerName}</h1>
+                        <h1 className="text-[18px] font-pixel text-primary uppercase">{partner?.firstName || activeQuest?.partnerName || 'Partner'}</h1>
                     </div>
 
                     {/* Quest messages in chat style */}
                     <div className="space-y-6">
-                        {activeQuest.challenges.map((challenge: any, idx: number) => {
+                        {activeQuest?.challenges?.map((challenge: any, idx: number) => {
                             const isLocked = challenge.myStatus.status === 'locked';
 
                             // Show current active/submitted challenges, 
                             // and only the FIRST locked challenge (next milestone).
                             // Hide subsequent future challenges.
                             if (isLocked) {
-                                const firstLockedIndex = activeQuest.challenges.findIndex((c: any) => c.myStatus.status === 'locked');
+                                const firstLockedIndex = activeQuest?.challenges?.findIndex((c: any) => c.myStatus.status === 'locked');
                                 if (idx > firstLockedIndex) return null;
                             }
 
@@ -311,13 +345,13 @@ export default function QuestsPage() {
                                         {/* Partner needs approval */}
                                         {partnerNeedsApproval && (
                                             <div className="mt-3 pt-3 border-t-2 border-border">
-                                                <div className="bg-orange-50 border border-orange-300 p-3">
-                                                    <div className="font-bold text-[8px] text-orange-900 mb-2">Partner needs approval!</div>
+                                                <div className="bg-white dark:bg-gray-800 border-2 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(59,89,152,0.1)]">
+                                                    <div className="font-bold text-[8px] text-primary mb-3">Partner needs approval!</div>
                                                     {challenge.partnerStatus.submissionImageBase64 && (
-                                                        <img src={challenge.partnerStatus.submissionImageBase64} alt="Partner Submission" className="h-24 mb-2 border-2 border-border" />
+                                                        <img src={challenge.partnerStatus.submissionImageBase64} alt="Partner Submission" className="h-24 mb-3 border-2 border-border" />
                                                     )}
                                                     {challenge.partnerStatus.submissionText && (
-                                                        <div className="text-[8px] italic mb-2 bg-white p-2 border border-orange-200">
+                                                        <div className="text-[8px] italic mb-3 bg-[#fdfdfd] p-3 border border-border text-foreground">
                                                             "{challenge.partnerStatus.submissionText}"
                                                         </div>
                                                     )}

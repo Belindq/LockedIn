@@ -112,7 +112,15 @@ export async function GET(request: NextRequest) {
 
             // Dynamic import to avoid circular dep issues if any
             const { generateDateIdea } = await import('@/lib/gemini-quest-engine');
-            const dateIdea = await generateDateIdea(userA, userB, userAResponses, userBResponses, cityContext);
+            const dateIdea = await generateDateIdea(
+                userA,
+                userB,
+                userAResponses,
+                userBResponses,
+                cityContext,
+                userA.firstName || "Partner A",
+                userB.firstName || "Partner B"
+            );
 
             // Re-fetch quest to check for race conditions (User B might have saved while we were generating)
             const freshQuest = await Quest.findById(questId);

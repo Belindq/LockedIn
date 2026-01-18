@@ -106,8 +106,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
                         challenges: data.challenges
                     });
                     setPartner({
-                        id: data.partnerId,
-                        firstName: data.partnerName,
+                        id: data.quest.partnerId,
+                        firstName: data.quest.partnerName,
                         avatarId: 'avatar-1' // Default or fetch real if available in API
                     });
                     setProgress({

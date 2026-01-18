@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { verifySession } from './lib/auth';
 
-export async function proxy(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
     if (request.nextUrl.pathname.startsWith('/api') &&
         !request.nextUrl.pathname.startsWith('/api/auth')) {
 

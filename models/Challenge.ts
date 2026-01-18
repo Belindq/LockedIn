@@ -12,6 +12,8 @@ export interface IChallenge extends Document {
     learnedAboutUserA?: string; // What AI learned about user A
     learnedAboutUserB?: string; // What AI learned about user B
     depthLevel?: number; // 1-5, increasing depth of exploration
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 const ChallengeSchema = new Schema<IChallenge>({
@@ -60,7 +62,7 @@ const ChallengeSchema = new Schema<IChallenge>({
         max: 5,
         default: 1
     }
-});
+}, { timestamps: true });
 
 // Compound index for efficient quest challenge retrieval
 ChallengeSchema.index({ questId: 1, orderIndex: 1 });

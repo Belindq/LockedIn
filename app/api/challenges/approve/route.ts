@@ -94,13 +94,34 @@ export async function POST(request: NextRequest) {
                 userId: new mongoose.Types.ObjectId(userId)
             });
 
-            // If BOTH users have approved this challenge, unlock the next one
+            // If BOTH users have approved this challenge, unlock the next one AND generate an AI insight
             if (myProgress && myProgress.status === 'approved') {
+                try {
+                    // Generate AI Insight
+                    const { generateChallengeInsight } = await import('@/lib/gemini-quest-engine');
+                    const insight = await generateChallengeInsight(
+                        challenge.prompt,
+                        myProgress.submissionText || (myProgress.submissionImageBase64 ? "Image submitted" : "Completed"),
+                        partnerProgress.submissionText || (partnerProgress.submissionImageBase64 ? "Image submitted" : "Completed")
+                    );
+
+                    // Store insight on the challenge document
+                    challenge.insights = JSON.stringify({
+                        title: insight.title,
+                        description: insight.insight,
+                        unlockedAt: new Date()
+                    });
+                    await challenge.save();
+
+                    console.log(`Generated AI insight for challenge ${challenge.orderIndex + 1}`);
+                } catch (aiErr) {
+                    console.error('Failed to generate AI insight:', aiErr);
+                }
+
                 // Find the next challenge
-                const currentChallenge = await Challenge.findById(challengeId);
                 const nextChallenge = await Challenge.findOne({
                     questId: quest._id,
-                    orderIndex: currentChallenge!.orderIndex + 1
+                    orderIndex: challenge.orderIndex + 1
                 });
 
                 if (nextChallenge) {

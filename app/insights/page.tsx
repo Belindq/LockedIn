@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "@/lib/UserContext";
 import { Card } from "@/components/Card";
 import { EmptyState } from "@/components/EmptyState";
@@ -10,10 +10,35 @@ import { ConfirmModal } from "@/components/ConfirmModal";
 import Link from "next/link";
 
 export default function InsightsPage() {
-    const { user, insights, partner, progress, setUserStatus } = useUser();
+    const { user, partner, progress, setUserStatus, sync } = useUser();
+    const [insights, setInsights] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
     const [showUnmatchModal, setShowUnmatchModal] = useState(false);
     const [hoveredAvatar, setHoveredAvatar] = useState<"user" | "partner" | null>(null);
     const [expandedInsightId, setExpandedInsightId] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (user.status === "matched") {
+            fetchInsights();
+        } else {
+            setLoading(false);
+        }
+    }, [user.status]);
+
+    const fetchInsights = async () => {
+        try {
+            const res = await fetch('/api/quest/insights');
+            const data = await res.json();
+            if (res.ok) {
+                setInsights(data.insights);
+            }
+        } catch (err) {
+            console.error('Error fetching insights:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     const handleUnmatch = () => {
         setUserStatus("idle");
@@ -22,6 +47,14 @@ export default function InsightsPage() {
     const toggleInsight = (id: string) => {
         setExpandedInsightId(expandedInsightId === id ? null : id);
     };
+
+    if (loading) {
+        return (
+            <div className="h-full bg-background flex items-center justify-center font-pixel text-primary">
+                LOADING INSIGHTS...
+            </div>
+        );
+    }
 
     if (user.status !== "matched" || !insights || insights.length === 0) {
         return (
@@ -40,24 +73,24 @@ export default function InsightsPage() {
         );
     }
 
-    // Determine how many insights are unlocked based on combined progress.
-    // Assuming each challenge completion unlocks an insight (e.g., 5 challenges = 20% each).
-    // For the mock, we simulate this progression.
-    const totalPossibleInsights = 5;
-    const unlockedCount = Math.floor((progress?.combined || 0) / (100 / totalPossibleInsights));
-
     // Sort revealed insights (newest first)
-    const revealedInsights = [...insights].slice(0, unlockedCount).sort((a, b) =>
+    const revealedInsights = [...insights].sort((a, b) =>
         new Date(b.unlockedAt).getTime() - new Date(a.unlockedAt).getTime()
     );
 
-    const hasMoreInsights = unlockedCount < totalPossibleInsights;
+    const hasMoreInsights = insights.length < 5;
 
     return (
         <div className="h-full bg-background flex flex-col">
             {/* Main Content */}
             <div className="flex-1 overflow-y-auto pb-32">
                 <div className="px-4 py-8">
+                    {/* Header */}
+                    <div className="text-center mb-6">
+                        <h2 className="text-[12px] font-pixel text-secondary mb-1">YOUR BOND WITH</h2>
+                        <h1 className="text-[18px] font-pixel text-primary uppercase">{partner?.firstName || 'Partner'}</h1>
+                    </div>
+
                     <div className="space-y-4">
                         {revealedInsights.map((insight) => {
                             const isExpanded = expandedInsightId === insight.id;
@@ -123,10 +156,10 @@ export default function InsightsPage() {
                         <div className="w-12 h-12 bg-card border-2 border-border flex items-center justify-center text-[20px] cursor-pointer hover:border-secondary transition-colors text-foreground">
                             👤
                         </div>
-                        {hoveredAvatar === "partner" && (
+                        {hoveredAvatar === "partner" && progress && (
                             <div className="absolute bottom-full left-0 mb-2 w-48 z-50">
                                 <ProgressBar
-                                    value={progress.partner}
+                                    value={progress?.partner || 0}
                                     label={`${partner?.firstName || 'Partner'}'s Progress`}
                                     variant="partner"
                                 />
@@ -136,23 +169,23 @@ export default function InsightsPage() {
 
                     {/* Combined progress bar */}
                     <div className="flex-1">
-                        {hoveredAvatar === null && (
+                        {hoveredAvatar === null && progress && (
                             <ProgressBar
-                                value={progress.combined}
-                                label={`QUEST ${progress.combined}%`}
+                                value={progress?.combined || 0}
+                                label={`QUEST ${progress?.combined || 0}%`}
                                 variant="combined"
                             />
                         )}
-                        {hoveredAvatar === "user" && (
+                        {hoveredAvatar === "user" && progress && (
                             <ProgressBar
-                                value={progress.user}
+                                value={progress?.user || 0}
                                 label="Your Progress"
                                 variant="user"
                             />
                         )}
-                        {hoveredAvatar === "partner" && (
+                        {hoveredAvatar === "partner" && progress && (
                             <ProgressBar
-                                value={progress.partner}
+                                value={progress?.partner || 0}
                                 label={`${partner?.firstName || 'Partner'}'s Progress`}
                                 variant="partner"
                             />
@@ -168,7 +201,7 @@ export default function InsightsPage() {
                         <div className="w-12 h-12 bg-card border-2 border-border flex items-center justify-center text-[20px] cursor-pointer hover:border-primary transition-colors text-foreground">
                             👤
                         </div>
-                        {hoveredAvatar === "user" && (
+                        {hoveredAvatar === "user" && progress && (
                             <div className="absolute bottom-full right-0 mb-2 w-48 z-50">
                                 <ProgressBar
                                     value={progress.user}

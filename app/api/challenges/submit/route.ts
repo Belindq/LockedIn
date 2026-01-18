@@ -114,15 +114,8 @@ export async function POST(request: NextRequest) {
                 );
             }
 
-            // Run face detection
-            faceDetection = await detectFaceInImage(submissionImageBase64);
-
-            if (faceDetection.blocked) {
-                return NextResponse.json(
-                    { error: 'Face detected! Please obscure your face to maintain mystery.' },
-                    { status: 400 }
-                );
-            }
+            // Face detection removed per user request
+            faceDetectionWarning = false;
 
             faceDetectionWarning = false; // Deprecated concept, but kept for schema compatibility if needed
 
@@ -147,15 +140,7 @@ export async function POST(request: NextRequest) {
                 );
             }
 
-            // Run face detection on the check-in photo
-            faceDetection = await detectFaceInImage(submissionImageBase64);
-
-            if (faceDetection.blocked) {
-                return NextResponse.json(
-                    { error: 'Face detected! Check-in photos must not show your face.' },
-                    { status: 400 }
-                );
-            }
+            // Face detection removed per user request
 
             // Store location and image
             imageId = new mongoose.Types.ObjectId();

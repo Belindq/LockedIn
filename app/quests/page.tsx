@@ -221,8 +221,8 @@ export default function QuestsPage() {
     const partnerProgress = activeQuest.quest.userBProgress || 0;
     const combinedProgress = Math.round((userProgress + partnerProgress) / 2);
 
-    // Get partner name from match data
-    const partnerName = activeQuest.quest?.partnerName || "Partner";
+    // Get partner name from context or quest data
+    const partnerName = partner?.firstName || activeQuest.quest?.partnerName || "Partner";
 
     // Active Quest View
     return (
@@ -233,7 +233,7 @@ export default function QuestsPage() {
                     {/* Partner Name Header */}
                     <div className="text-center mb-6">
                         <h2 className="text-[12px] font-pixel text-secondary mb-1">QUESTING WITH</h2>
-                        <h1 className="text-[18px] font-pixel text-primary uppercase">{partner?.firstName || activeQuest?.partnerName || 'Partner'}</h1>
+                        <h1 className="text-[18px] font-pixel text-primary uppercase">{partner?.firstName || activeQuest.quest?.partnerName || 'Partner'}</h1>
                     </div>
 
                     {/* Quest messages in chat style */}
@@ -346,7 +346,7 @@ export default function QuestsPage() {
                                         {partnerNeedsApproval && (
                                             <div className="mt-3 pt-3 border-t-2 border-border">
                                                 <div className="bg-white dark:bg-gray-800 border-2 border-primary p-4 shadow-[4px_4px_0px_0px_rgba(59,89,152,0.1)]">
-                                                    <div className="font-bold text-[8px] text-primary mb-3">Partner needs approval!</div>
+                                                    <div className="font-bold text-[8px] text-primary mb-3">{(partner?.firstName || activeQuest.quest?.partnerName || 'Partner')} needs approval!</div>
                                                     {challenge.partnerStatus.submissionImageBase64 && (
                                                         <img src={challenge.partnerStatus.submissionImageBase64} alt="Partner Submission" className="h-24 mb-3 border-2 border-border" />
                                                     )}
@@ -442,7 +442,7 @@ export default function QuestsPage() {
                                 <div className="absolute bottom-full left-0 mb-2 w-48">
                                     <ProgressBar
                                         value={partnerProgress}
-                                        label={`${activeQuest.quest.partnerName}'s Progress`}
+                                        label={`${partner?.firstName || activeQuest.quest?.partnerName || 'Partner'}'s Progress`}
                                         variant="partner"
                                     />
                                 </div>

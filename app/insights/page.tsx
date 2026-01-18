@@ -88,7 +88,7 @@ export default function InsightsPage() {
                     {/* Header */}
                     <div className="text-center mb-6">
                         <h2 className="text-[12px] font-pixel text-secondary mb-1">YOUR BOND WITH</h2>
-                        <h1 className="text-[18px] font-pixel text-primary uppercase">{partner?.firstName || 'Partner'}</h1>
+                        <h1 className="text-[18px] font-pixel text-primary uppercase">{partner?.firstName || "Partner"}</h1>
                     </div>
 
                     <div className="space-y-4">
@@ -157,13 +157,11 @@ export default function InsightsPage() {
                             👤
                         </div>
                         {hoveredAvatar === "partner" && progress && (
-                            <div className="absolute bottom-full left-0 mb-2 w-48 z-50">
-                                <ProgressBar
-                                    value={progress?.partner || 0}
-                                    label={`${partner?.firstName || 'Partner'}'s Progress`}
-                                    variant="partner"
-                                />
-                            </div>
+                            <ProgressBar
+                                value={progress?.partner || 0}
+                                label={`${partner?.firstName || "Partner"}'s Progress`}
+                                variant="partner"
+                            />
                         )}
                     </div>
 

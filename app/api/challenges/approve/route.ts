@@ -4,7 +4,8 @@ import Quest from '@/models/Quest';
 import Challenge from '@/models/Challenge';
 import ChallengeProgress from '@/models/ChallengeProgress';
 import User from '@/models/User';
-import { isQuestParticipant, getPartnerUserId, isQuestComplete } from '@/lib/quest-utils';
+import { getPartnerUserId, isQuestParticipant, isQuestComplete } from '@/lib/quest-utils';
+import { generateChallengeInsight } from '@/lib/gemini-quest-engine';
 import mongoose from 'mongoose';
 
 /**
@@ -99,11 +100,16 @@ export async function POST(request: NextRequest) {
             if (myProgress && myProgress.status === 'approved') {
                 try {
                     // Generate AI Insight
-                    const { generateChallengeInsight } = await import('@/lib/gemini-quest-engine');
+                    // Fetch names for AI personalization
+                    const userA = await User.findById(quest.userAId).select('firstName');
+                    const userB = await User.findById(quest.userBId).select('firstName');
+
                     const insight = await generateChallengeInsight(
                         challenge.prompt,
                         myProgress.submissionText || (myProgress.submissionImageBase64 ? "Image submitted" : "Completed"),
-                        partnerProgress.submissionText || (partnerProgress.submissionImageBase64 ? "Image submitted" : "Completed")
+                        partnerProgress.submissionText || (partnerProgress.submissionImageBase64 ? "Image submitted" : "Completed"),
+                        userA?.firstName || "Partner A",
+                        userB?.firstName || "Partner B"
                     );
 
                     // Store insight on the challenge document

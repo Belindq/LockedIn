@@ -220,7 +220,7 @@ export default function GalleryPage() {
                             <span>
                                 {selectedGalleryItem.author === "user"
                                     ? "YOU"
-                                    : partner?.firstName?.toUpperCase() || "PARTNER"}
+                                    : partner?.firstName?.toUpperCase()}
                             </span>
                             <span>{new Date(selectedGalleryItem.timestamp).toLocaleString()}</span>
                         </div>

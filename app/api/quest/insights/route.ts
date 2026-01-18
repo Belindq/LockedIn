@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
                     id: c._id,
                     title: insightData.title,
                     description: insightData.description,
+                    confidenceScore: insightData.confidenceScore,
                     category: 'compatibility', // default
                     unlockedAt: insightData.unlockedAt || c.updatedAt
                 };

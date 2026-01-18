@@ -114,29 +114,44 @@ export async function GET(request: NextRequest) {
             const { generateDateIdea } = await import('@/lib/gemini-quest-engine');
             const dateIdea = await generateDateIdea(userA, userB, userAResponses, userBResponses, cityContext);
 
-            // Calculate exact midpoint for the "Pin" (even if the text says something else, map needs a point)
-            const midLat = (userA.locationCoordinates.lat + userB.locationCoordinates.lat) / 2;
-            const midLng = (userA.locationCoordinates.lng + userB.locationCoordinates.lng) / 2;
+            // Re-fetch quest to check for race conditions (User B might have saved while we were generating)
+            const freshQuest = await Quest.findById(questId);
 
-            // Set date to 3 days from now
-            const dateTime = new Date();
-            dateTime.setDate(dateTime.getDate() + 3);
-            dateTime.setHours(19, 0, 0, 0);
+            if (freshQuest && freshQuest.finalDateLocation && freshQuest.finalDateTime) {
+                // Another request beat us to it. Use their data to ensure consistency.
+                console.log('Race condition detected: Using existing date location from DB');
+                quest.finalDateLocation = freshQuest.finalDateLocation;
+                quest.finalDateTime = freshQuest.finalDateTime;
+                quest.finalDateTitle = freshQuest.finalDateTitle;
+                quest.finalDateDescription = freshQuest.finalDateDescription;
+                quest.finalDateActivity = freshQuest.finalDateActivity;
+                quest.finalDateAddress = freshQuest.finalDateAddress;
+            } else {
+                // We are the first! Save our data.
+                // Calculate exact midpoint for the "Pin" (even if the text says something else, map needs a point)
+                const midLat = (userA.locationCoordinates.lat + userB.locationCoordinates.lat) / 2;
+                const midLng = (userA.locationCoordinates.lng + userB.locationCoordinates.lng) / 2;
 
-            quest.finalDateLocation = {
-                placeId: 'generated_ai_loc',
-                lat: midLat,
-                lng: midLng
-            };
-            quest.finalDateTime = dateTime;
+                // Set date to 3 days from now
+                const dateTime = new Date();
+                dateTime.setDate(dateTime.getDate() + 3);
+                dateTime.setHours(19, 0, 0, 0);
 
-            // Save AI details
-            quest.finalDateTitle = dateIdea.title;
-            quest.finalDateDescription = dateIdea.description;
-            quest.finalDateActivity = dateIdea.activityType;
-            quest.finalDateAddress = dateIdea.address;
+                quest.finalDateLocation = {
+                    placeId: 'generated_ai_loc',
+                    lat: midLat,
+                    lng: midLng
+                };
+                quest.finalDateTime = dateTime;
 
-            await quest.save();
+                // Save AI details
+                quest.finalDateTitle = dateIdea.title;
+                quest.finalDateDescription = dateIdea.description;
+                quest.finalDateActivity = dateIdea.activityType;
+                quest.finalDateAddress = dateIdea.address;
+
+                await quest.save();
+            }
         }
 
         return NextResponse.json({

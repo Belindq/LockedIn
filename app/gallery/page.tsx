@@ -78,7 +78,7 @@ export default function GalleryPage() {
                     {/* Header */}
                     <div className="text-center mb-6">
                         <h2 className="text-[12px] font-pixel text-secondary mb-1">MOMENTS WITH</h2>
-                        <h1 className="text-[18px] font-pixel text-primary uppercase">{partner?.firstName || 'Partner'}</h1>
+                        <h1 className="text-[18px] font-pixel text-primary uppercase">{partner?.firstName || "Partner"}</h1>
                     </div>
 
                     {/* Gallery Grid - Polaroid Style */}

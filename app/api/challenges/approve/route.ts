@@ -116,6 +116,7 @@ export async function POST(request: NextRequest) {
                     challenge.insights = JSON.stringify({
                         title: insight.title,
                         description: insight.insight,
+                        confidenceScore: insight.confidenceScore,
                         unlockedAt: new Date()
                     });
                     await challenge.save();

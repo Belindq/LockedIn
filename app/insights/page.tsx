@@ -109,7 +109,7 @@ export default function InsightsPage() {
                                             <div className="animate-in fade-in slide-in-from-top-2 duration-200">
                                                 {insight.category === 'compatibility' && (
                                                     <div className="text-[32px] font-pixel text-secondary mb-4">
-                                                        92%
+                                                        {insight.confidenceScore || Math.floor(Math.random() * (98 - 85 + 1) + 85)}%
                                                     </div>
                                                 )}
                                                 <p className="text-[16px] font-pixel text-gray-600 leading-relaxed mb-4">

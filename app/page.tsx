@@ -18,10 +18,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start bg-background p-4">
-      <div className="max-w-md w-full text-center space-y-2 -mt-12">
+      <div className="max-w-md w-full text-center space-y-0 -mt-20">
         {/* Logo */}
-        <div className="flex justify-center mb-2">
-          <img src="/logo.png" alt="LockedIn Logo" className="h-[32rem] object-contain image-pixelated -ml-8" />
+        <div className="flex justify-center mb-0">
+          <img src="/logo.png" alt="LockedIn Logo" className="h-[32rem] object-contain image-pixelated" />
         </div>
 
         {/* Begin Button */}

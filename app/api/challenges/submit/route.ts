@@ -83,7 +83,9 @@ export async function POST(request: NextRequest) {
         }
 
         // Verify challenge hasn't been submitted yet
-        if (progress.status !== 'pending') {
+        // Verify challenge hasn't been submitted yet
+        // Allow 'active' or 'pending' status
+        if (progress.status !== 'pending' && progress.status !== 'active') {
             return NextResponse.json(
                 { error: 'Challenge already submitted' },
                 { status: 400 }

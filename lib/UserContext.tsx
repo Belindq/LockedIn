@@ -47,14 +47,35 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export function UserProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User>(initialUser);
 
-    // Load from localStorage on mount
+    // Load from localStorage on mount AND verify with backend
     React.useEffect(() => {
         const savedUser = localStorage.getItem('lockedin_user');
         if (savedUser) {
             try {
+                // 1. Optimistically set user from local storage
                 setUser(JSON.parse(savedUser));
+
+                // 2. Verify with backend
+                fetch('/api/users/me')
+                    .then(res => {
+                        if (!res.ok) {
+                            console.warn('User session invalid, logging out.');
+                            throw new Error('Session invalid');
+                        }
+                        return res.json();
+                    })
+                    .then(userData => {
+                        // Optional: Update user with latest server data
+                        // setUser(prev => ({ ...prev, ...userData }));
+                    })
+                    .catch(err => {
+                        // If verification fails, logout
+                        setUser(initialUser);
+                        localStorage.removeItem('lockedin_user');
+                    });
             } catch (e) {
                 console.error("Failed to parse user from local storage", e);
+                localStorage.removeItem('lockedin_user');
             }
         }
     }, []);

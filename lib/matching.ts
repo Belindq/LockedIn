@@ -199,6 +199,21 @@ export async function runMatchingAlgorithm() {
                 validB.status = 'matched';
                 await validB.save();
 
+                // --- Send Emails ---
+                try {
+                    console.log(`Sending match emails to ${validA.email} and ${validB.email}`);
+                    const { sendMatchEmail } = await import('@/lib/email');
+
+                    // Send concurrently
+                    await Promise.all([
+                        sendMatchEmail(validA.email, validA.firstName, validB.firstName),
+                        sendMatchEmail(validB.email, validB.firstName, validA.firstName)
+                    ]);
+                } catch (emailErr) {
+                    console.error('Failed to send match emails:', emailErr);
+                    // Don't fail the match because email failed
+                }
+
                 createdMatches.push(match);
             }
         }

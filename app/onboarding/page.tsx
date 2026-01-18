@@ -26,7 +26,7 @@ export default function OnboardingPage() {
     // Redirect if already onboarded
     useEffect(() => {
         if (user && user.status && user.status !== 'onboarding') {
-            router.replace('/quests'); // or /matches
+            router.replace('/matches'); // Redirect to matches to see "Locked In" status
         }
     }, [user, router]);
 
